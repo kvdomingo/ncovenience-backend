@@ -5,6 +5,36 @@
 <link rel="stylesheet" href="{{ static('web/css/index.css') }}" />
 <script type="text/javascript" src="{{ static('web/js/index.js') }}"></script>
 
-<div class="map" id="map"></div>
+<div class="row m-0 p-0">
+    <div class="col-md-5 p-3" id="sideDash">
+        <h1 class="display-5 mb-4">Dashboard</h1>
+        <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
+            {% set panel_contents = [
+                ('border-warning', 'Confirmed', 'text-warning', num_confirmed),
+                ('border-success', 'Recovered', 'text-success', num_recovered),
+                ('border-danger', 'Deaths', 'text-danger', num_death),
+                ('border-muted', 'Tests', 'text-muted', num_tests),
+                ('border-secondary', 'PUMs', 'text-secondary', num_pum),
+                ('border-default', 'PUIs', 'text-default', num_pui),
+            ] %}
+            {% for border, header, text, num in panel_contents %}
+                <div class="col mx-0 px-2">
+                    <div class="card {{ border }} mb-3">
+                        <div class="card-header">{{ header }}</div>
+                        <div class="card-body {{ text }}">
+                            <h1 class="card-title display-5">{{ num }}</h1>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="pr-1 mb-3">
+            {{ time_plot }}
+        </div>
+    </div>
+    <div class="col-md-7 m-0 p-0">
+        <div class="map" id="map"></div>
+    </div>
+</div>
 
 {% endblock %}
