@@ -84,6 +84,7 @@ def index(request):
     time_conf_unique = time_conf.groupby('Country/Region').sum()
     time_recov_unique = time_recov.groupby('Country/Region').sum()
     time_dead_unique = time_dead.groupby('Country/Region').sum()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=time_conf_unique.keys()[2:],
@@ -117,9 +118,34 @@ def index(request):
             'l': 0,
             'r': 0,
             'b': 0,
-        }
+        },
+        xaxis_title='number of cases',
     )
     time_plot = plot(fig, output_type='div', include_plotlyjs=False)
+
+    conf_by_age = ph_conf.groupby(pd.cut(ph_conf['age'], np.arange(10, 101, 10))).count()
+    fig = go.Figure([
+        go.Bar(
+            x=conf_by_age['caseID'].values[::-1],
+            y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values))[::-1],
+            text=conf_by_age['caseID'].values,
+            textposition='auto',
+            name='Confirmed',
+            marker_color='#ffbb33',
+            orientation='h',
+        ),
+    ])
+    fig.update_layout(
+        yaxis_title='age group',
+        xaxis_title='number of cases',
+        margin={
+            't': 0,
+            'l': 0,
+            'r': 0,
+            'b': 0,
+        },
+    )
+    age_plot = plot(fig, output_type='div', include_plotlyjs=False)
 
     context = {
         'active_page': 'index',
@@ -130,6 +156,7 @@ def index(request):
         'num_pum': numbers.query("type == 'PUMs'")['count'].values[0],
         'num_pui': numbers.query("type == 'PUIs'")['count'].values[0],
         'time_plot': time_plot,
+        'age_plot': age_plot,
     }
     return render(request, 'web/index.html.j2', context)
 
