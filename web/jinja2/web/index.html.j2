@@ -6,9 +6,12 @@
 <script type="text/javascript" src="{{ static('web/js/index.js') }}"></script>
 
 <div class="row m-0 p-0">
-    <div class="col-md-5 p-3" id="sideDash">
+    <div class="col-md-7 m-0 p-0">
+        <div class="map" id="map"></div>
+    </div>
+    <div class="col-md-5 p-3 text-right" id="sideDash">
         <h1 class="display-5 mb-4">Dashboard</h1>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3">
+        <div class="row row-cols-2 row-cols-xl-3">
             {% set panel_contents = [
                 ('border-warning', 'Confirmed', 'text-warning', num_confirmed),
                 ('border-success', 'Recovered', 'text-success', num_recovered),
@@ -28,20 +31,20 @@
                 </div>
             {% endfor %}
         </div>
-        <div class="mb-5">
-            <div class="card border-muted">
-                <div class="card-header">Daily Cases</div>
-                <div class="card-body mx-4">
-                    {{ time_plot }}
+
+        {% set charts = [
+            ('Daily cases', time_plot),
+            ('Cases by age group', age_plot),
+            ('NCR cases', ncr_cases),
+        ] %}
+        {% for title, chart in charts %}
+            <div class="mb-3 mx-0">
+                <div class="card border-muted">
+                    <div class="card-header">{{ title }}</div>
+                    <div class="card-body m-0">{{ chart }}</div>
                 </div>
             </div>
-        </div>
-        <div class="pr-1 mb-5">
-            {{ age_plot }}
-        </div>
-    </div>
-    <div class="col-md-7 m-0 p-0">
-        <div class="map" id="map"></div>
+        {% endfor %}
     </div>
 </div>
 

@@ -60,6 +60,20 @@ if ph_conf is None:
     ph_url = 'https://ncovph.com/api/confirmed-cases'
     ph_conf = pd.read_json(request.urlopen(ph_url))
     ph_conf = ph_conf.drop('date_confirmed', axis=1)
+    regions, provinces, cities = [], [], []
+    for v in ph_conf['residence'].values:
+        if v is not None:
+            regions.append(v['region'])
+            provinces.append(v['province'])
+            cities.append(v['city'])
+        else:
+            regions.append(None)
+            provinces.append(None)
+            cities.append(None)
+    ph_conf.insert(8, 'region', regions)
+    ph_conf.insert(9, 'province', provinces)
+    ph_conf.insert(10, 'city', cities)
+    ph_conf = ph_conf.drop('residence', axis=1)
     cache.set('ph_conf', ph_conf.to_json())
 else:
     ph_conf = pd.read_json(ph_conf)
@@ -82,6 +96,8 @@ else:
 
 
 def index(request):
+    global ph_conf
+
     time_conf_unique = time_conf.groupby('Country/Region').sum()
     time_recov_unique = time_recov.groupby('Country/Region').sum()
     time_dead_unique = time_dead.groupby('Country/Region').sum()
@@ -148,6 +164,30 @@ def index(request):
     )
     age_plot = plot(fig, output_type='div', include_plotlyjs=False)
 
+    metro_conf = ph_conf.query("region == 'NCR'")
+    fig = go.Figure(
+        data=[
+            go.Pie(
+                labels=metro_conf.groupby('city').count().index,
+                values=metro_conf.groupby('city').count()['caseID'].values,
+            )
+        ]
+    )
+    fig.update_traces(
+        textinfo='value+label',
+    )
+    fig.update_layout(
+        showlegend=False,
+        margin={
+            't': 0,
+            'l': 0,
+            'r': 30,
+            'b': 0,
+        },
+        uniformtext_mode='hide',
+    )
+    ncr_cases = plot(fig, output_type='div', include_plotlyjs=False)
+
     context = {
         'active_page': 'index',
         'num_confirmed': numbers.query("type == 'confirmed'")['count'].values[0],
@@ -158,6 +198,7 @@ def index(request):
         'num_pui': numbers.query("type == 'PUIs'")['count'].values[0],
         'time_plot': time_plot,
         'age_plot': age_plot,
+        'ncr_cases': ncr_cases,
     }
     return render(request, 'web/index.html.j2', context)
 
@@ -165,7 +206,7 @@ def index(request):
 def data(request):
     context = {
         'active_page': 'data',
-        'ph_conf': ph_conf.to_html(),
+        'ph_conf': ph_conf.to_dict('index'),
     }
     return render(request, 'web/data.html.j2', context)
 
