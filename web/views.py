@@ -59,6 +59,7 @@ ph_conf = cache.get('ph_conf')
 if ph_conf is None:
     ph_url = 'https://ncovph.com/api/confirmed-cases'
     ph_conf = pd.read_json(request.urlopen(ph_url))
+    ph_conf = ph_conf.drop('date_confirmed', axis=1)
     cache.set('ph_conf', ph_conf.to_json())
 else:
     ph_conf = pd.read_json(ph_conf)
