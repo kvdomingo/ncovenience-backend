@@ -144,7 +144,7 @@ def index(request):
     fig = go.Figure([
         go.Bar(
             x=conf_by_age['caseID'].values,
-            y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values))[::-1],
+            y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
             text=conf_by_age['caseID'].values,
             textposition='auto',
             name='Confirmed',
