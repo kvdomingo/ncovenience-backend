@@ -143,7 +143,7 @@ def index(request):
     conf_by_age = ph_conf.groupby(pd.cut(ph_conf['age'], np.arange(10, 101, 10))).count()
     fig = go.Figure([
         go.Bar(
-            x=conf_by_age['caseID'].values[::-1],
+            x=conf_by_age['caseID'].values,
             y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values))[::-1],
             text=conf_by_age['caseID'].values,
             textposition='auto',
