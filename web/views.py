@@ -140,12 +140,13 @@ def index(request):
     )
     time_plot = plot(fig, output_type='div', include_plotlyjs=False)
 
-    conf_by_age = ph_conf.groupby(pd.cut(ph_conf['age'], np.arange(10, 101, 10))).count()
+    valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For validation'").index).astype('uint8')
+    conf_by_age = valid_age.groupby(pd.cut(valid_age, np.arange(10, 101, 10))).count()
     fig = go.Figure([
         go.Bar(
-            x=conf_by_age['caseID'].values,
+            x=conf_by_age.values,
             y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
-            text=conf_by_age['caseID'].values,
+            text=conf_by_age.values,
             textposition='auto',
             name='Confirmed',
             marker_color='#ffbb33',
@@ -156,9 +157,9 @@ def index(request):
         yaxis_title='age group',
         xaxis_title='number of cases',
         margin={
-            't': 0,
+            't': 30,
             'l': 0,
-            'r': 0,
+            'r': 30,
             'b': 0,
         },
     )
@@ -212,8 +213,4 @@ def data(request):
 
 
 def api(request):
-    return JsonResponse(ph_conf.to_dict('index'))
-
-
-def api_geo(request):
     return JsonResponse(json.loads(df_to_geojson(ph_conf)))
