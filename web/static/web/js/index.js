@@ -4,18 +4,27 @@ document.addEventListener("DOMContentLoaded", () => {
         .css("overflow-y", "scroll")
         .css("height", window.innerHeight - $(".navbar").first().innerHeight());
 
-    const xhttp = new XMLHttpRequest();
+    var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            data = JSON.parse(this.responseText);
+            cases = JSON.parse(this.responseText);
         }
     };
-    xhttp.open('GET', window.location.href + 'api/geo', true);
+    xhttp.open('GET', window.location.href + 'api/cases', true);
+    xhttp.send();
+
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            hospitals = JSON.parse(this.responseText);
+        }
+    };
+    xhttp.open('GET', window.location.href + 'api/hospitals', true);
     xhttp.send();
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrODhwbDk4MjBiNTAzbHM0enByZ21pZ3YifQ.xKWVuQAh7SnTyT-IL1rb1g';
 
-    var map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [121, 12.5],
@@ -53,10 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         map.addSource('cases', {
             type: 'geojson',
-            data: data,
+            data: cases,
             cluster: true,
             clusterMaxZoom: 14,
             clusterRadius: 50,
+        });
+
+        map.addSource('hospitals', {
+            type: 'geojson',
+            data: hospitals,
         });
 
         map.addLayer({
@@ -114,6 +128,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         map.addLayer({
+            id: 'unclustered-point',
+            type: 'circle',
+            source: 'hospitals',
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+                'circle-color': '#11b4da',
+                'circle-radius': 5,
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#fff'
+            },
+        });
+
+        map.addLayer({
             id: 'clusters',
             type: 'circle',
             source: 'cases',
@@ -152,19 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
             },
         });
 
-        map.addLayer({
-            id: 'unclustered-point',
-            type: 'circle',
-            source: 'cases',
-            filter: ['!', ['has', 'point_count']],
-            paint: {
-                'circle-color': '#11b4da',
-                'circle-radius': 10,
-                'circle-stroke-width': 1,
-                'circle-stroke-color': '#fff'
-            },
-        });
-
         var hoveredStateId = null;
 
         map.on('mousemove', 'province-fills', function(e) {
@@ -175,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         { hover: false },
                     );
                 }
-                hoveredStateId = e.features[0].properties['ID_1'];
+                hoveredStateId = e.features[0].properties.ID_1;
                 map.setFeatureState(
                     { source: 'provinces', id: hoveredStateId },
                     { hover: true },
@@ -198,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 layers: ['clusters'],
             });
             var clusterId = features[0].properties.cluster_id;
-            map.getSource('cases').getClusterExpansionZoom(
+            map.getSource('hospitals').getClusterExpansionZoom(
                 clusterId,
                 function(err, zoom) {
                     if (err) return;
@@ -216,10 +230,8 @@ document.addEventListener("DOMContentLoaded", () => {
             new mapboxgl.Popup()
                 .setLngLat(coordinates)
                 .setHTML(`
-                    caseID: ${props.caseID}<br />
-                    age: ${props.age}<br />
-                    sex: ${props.sex[0]}<br />
-                    facility: ${props.facility}
+                    facility: ${props.facility}<br />
+                    count: ${props.count_}
                 `)
                 .addTo(map);
         });

@@ -1,216 +1,53 @@
-import os
 import json
-import geojson
-import pandas as pd
-import numpy as np
-import plotly.express as px
-import plotly.graph_objs as go
-from plotly.offline import plot
-from datetime import datetime
-from urllib import request
-from django.http import JsonResponse
+from . import data, plot
+from time import time
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
-from django.core.cache import cache
-from dotenv import load_dotenv
 
 
-load_dotenv()
-px.set_mapbox_access_token(os.environ['MAPBOX_ACCESS_TOKEN'])
-
-
-def df_to_geojson(df):
-    features = []
-    insert_features = lambda row: features.append(geojson.Feature(
-            geometry=geojson.Point((
-                row['coordinates']['lng'],
-                row['coordinates']['lat'],
-                0,
-            )),
-            properties=row.to_dict(),
-        ))
-    df.apply(insert_features, axis=1)
-    return geojson.dumps(geojson.FeatureCollection(features))
-
-
-def date_to_datetime(df):
-    for d in df.columns[4:]:
-        df = df.rename(columns={d: datetime.strptime(d, '%m/%d/%y')})
-    return df
-
-
-def count_latest(df):
-    df_unique = df.groupby('Country/Region').sum()
-    total = df_unique[df_unique.keys()[-1]][df_unique.index.tolist().index('Philippines')]
-    return total
-
-
-daily_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-26-2020.csv'
-time_conf_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
-time_recov_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv'
-time_dead_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
-
-time_conf = date_to_datetime(pd.read_csv(request.urlopen(time_conf_url)))
-time_recov = date_to_datetime(pd.read_csv(request.urlopen(time_recov_url)))
-time_dead = date_to_datetime(pd.read_csv(request.urlopen(time_dead_url)))
-world_daily = pd.read_csv(request.urlopen(daily_url))
-
-ph_conf = cache.get('ph_conf')
-if ph_conf is None:
-    ph_url = 'https://ncovph.com/api/confirmed-cases'
-    ph_conf = pd.read_json(request.urlopen(ph_url))
-    ph_conf = ph_conf.drop('date_confirmed', axis=1)
-    regions, provinces, cities = [], [], []
-    for v in ph_conf['residence'].values:
-        if v is not None:
-            regions.append(v['region'])
-            provinces.append(v['province'])
-            cities.append(v['city'])
-        else:
-            regions.append(None)
-            provinces.append(None)
-            cities.append(None)
-    ph_conf.insert(8, 'region', regions)
-    ph_conf.insert(9, 'province', provinces)
-    ph_conf.insert(10, 'city', cities)
-    ph_conf = ph_conf.drop('residence', axis=1)
-    cache.set('ph_conf', ph_conf.to_json())
-else:
-    ph_conf = pd.read_json(ph_conf)
-
-ph_conf_geo = cache.get('ph_conf_geo')
-if ph_conf_geo is None:
-    ph_conf_geo = df_to_geojson(ph_conf)
-    cache.set('ph_conf_geo', ph_conf_geo)
-    ph_conf_geo = pd.read_json(ph_conf_geo)
-else:
-    ph_conf_geo = pd.read_json(ph_conf_geo)
-
-numbers = cache.get('numbers')
-if numbers is None:
-    numbers_url = 'https://ncov-tracker-slexwwreja-de.a.run.app/numbers'
-    numbers = pd.read_json(numbers_url)
-    cache.set('numbers', numbers.to_json())
-else:
-    numbers = pd.read_json(numbers)
-
+wake_time = time()
 
 def index(request):
-    global ph_conf
-
-    time_conf_unique = time_conf.groupby('Country/Region').sum()
-    time_recov_unique = time_recov.groupby('Country/Region').sum()
-    time_dead_unique = time_dead.groupby('Country/Region').sum()
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=time_conf_unique.keys()[2:],
-        y=time_conf_unique.query("`Country/Region` == 'Philippines'")[time_conf_unique.keys()[2:]].sum().values,
-        name='Confirmed',
-        marker_color='#ffbb33',
-        mode='lines+markers',
-    ))
-    fig.add_trace(go.Scatter(
-        x=time_recov_unique.keys()[2:],
-        y=time_recov_unique.query("`Country/Region` == 'Philippines'")[time_recov_unique.keys()[2:]].sum().values,
-        name='Recovered',
-        marker_color='#00C851',
-        mode='lines+markers',
-    ))
-    fig.add_trace(go.Scatter(
-        x=time_dead_unique.keys()[2:],
-        y=time_dead_unique.query("`Country/Region` == 'Philippines'")[time_dead_unique.keys()[2:]].sum().values,
-        name='Deaths',
-        marker_color='#ff4444',
-        mode='lines+markers',
-    ))
-    fig.update_layout(
-        legend={
-            'x': 0,
-            'y': 1,
-        },
-        legend_orientation='h',
-        margin={
-            't': 0,
-            'l': 0,
-            'r': 0,
-            'b': 0,
-        },
-        xaxis_title='number of cases',
-    )
-    time_plot = plot(fig, output_type='div', include_plotlyjs=False)
-
-    valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For validation'").index).astype('uint8')
-    conf_by_age = valid_age.groupby(pd.cut(valid_age, np.arange(10, 101, 10))).count()
-    fig = go.Figure([
-        go.Bar(
-            x=conf_by_age.values,
-            y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
-            text=conf_by_age.values,
-            textposition='auto',
-            name='Confirmed',
-            marker_color='#ffbb33',
-            orientation='h',
-        ),
-    ])
-    fig.update_layout(
-        yaxis_title='age group',
-        xaxis_title='number of cases',
-        margin={
-            't': 30,
-            'l': 0,
-            'r': 30,
-            'b': 0,
-        },
-    )
-    age_plot = plot(fig, output_type='div', include_plotlyjs=False)
-
-    metro_conf = ph_conf.query("region == 'NCR'")
-    fig = go.Figure(
-        data=[
-            go.Pie(
-                labels=metro_conf.groupby('city').count().index,
-                values=metro_conf.groupby('city').count()['caseID'].values,
-            )
-        ]
-    )
-    fig.update_traces(
-        textinfo='value+label',
-    )
-    fig.update_layout(
-        showlegend=False,
-        margin={
-            't': 0,
-            'l': 0,
-            'r': 30,
-            'b': 0,
-        },
-        uniformtext_mode='hide',
-    )
-    ncr_cases = plot(fig, output_type='div', include_plotlyjs=False)
-
+    numbers = data.get_ph_numbers()
     context = {
         'active_page': 'index',
-        'num_confirmed': numbers.query("type == 'confirmed'")['count'].values[0],
-        'num_recovered': numbers.query("type == 'recovered'")['count'].values[0],
-        'num_death': numbers.query("type == 'deaths'")['count'].values[0],
-        'num_tests': numbers.query("type == 'tests'")['count'].values[0],
-        'num_pum': numbers.query("type == 'PUMs'")['count'].values[0],
-        'num_pui': numbers.query("type == 'PUIs'")['count'].values[0],
-        'time_plot': time_plot,
-        'age_plot': age_plot,
-        'ncr_cases': ncr_cases,
+        'num_confirmed': numbers.query("`type` == 'confirmed'")['count'].values[0],
+        'num_recovered': numbers.query("`type` == 'recovered'")['count'].values[0],
+        'num_death': numbers.query("`type` == 'deaths'")['count'].values[0],
+        'num_tests': numbers.query("`type` == 'tests'")['count'].values[0],
+        'num_pum': numbers.query("`type` == 'PUMs'")['count'].values[0],
+        'num_pui': numbers.query("`type` == 'PUIs'")['count'].values[0],
+        'time_plot': plot.get_plot_over_time(),
+        'age_plot': plot.get_plot_by_age(),
+        'ncr_cases': plot.get_metro_cases(),
     }
     return render(request, 'web/index.html.j2', context)
 
 
-def data(request):
-    context = {
-        'active_page': 'data',
-        'ph_conf': ph_conf.to_dict('index'),
-    }
-    return render(request, 'web/data.html.j2', context)
+def api_health(request):
+    if request.method == 'GET':
+        health = {
+            'name': 'ncovenience',
+            'uptime': time() - wake_time,
+        }
+        return JsonResponse(health)
+    else:
+        return HttpResponse(f'{request.method} not allowed')
 
-
-def api(request):
-    return JsonResponse(json.loads(df_to_geojson(ph_conf)))
+def api(request, page):
+    if request.method == 'GET':
+        if page == 'cases':
+            ph_conf = data.get_ph_confirmed()
+            ph_geo = data.df_to_geojson(ph_conf)
+            ph_geojson = json.loads(ph_geo)
+            return JsonResponse(ph_geojson)
+        elif page == 'hospitals':
+            hospital = data.get_ph_hospitals()
+            hosp_geo = data.df_to_geojson(hospital)
+            hosp_geojson = json.loads(hosp_geo)
+            return JsonResponse(hosp_geojson)
+        else:
+            raise Http404()
+    else:
+        return HttpResponse(f'{request.method} not allowed')

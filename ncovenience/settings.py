@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import jinja2
+from jinja2 import DebugUndefined, Undefined
 from dotenv import load_dotenv
+from plotly.express import set_mapbox_access_token
 
 
 load_dotenv()
@@ -55,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -71,7 +72,7 @@ TEMPLATES = [
         'OPTIONS': {
             'environment': 'ncovenience.jinja2.environment',
             'autoescape': False,
-            'undefined': jinja2.DebugUndefined if DEBUG else jinja2.Undefined,
+            'undefined': DebugUndefined if DEBUG else Undefined,
         },
     },
     {
@@ -151,6 +152,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+set_mapbox_access_token(os.environ['MAPBOX_ACCESS_TOKEN'])
 
 if bool(int(os.environ['ON_HEROKU'])):
     import django_heroku
