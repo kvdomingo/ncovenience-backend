@@ -6,6 +6,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrODhwbDk4MjBiNTAzbHM0enByZ21pZ3YifQ.xKWVuQAh7SnTyT-IL1rb1g';
 
+    request = axios.get('/api/cases')
+        .then(response => {
+            cases = response.data;
+        });
+    request = axios.get('/api/hospitals')
+        .then(response => {
+            hospitals = response.data;
+        });
+    request = axios.get('https://raw.githubusercontent.com/macoymejia/geojsonph/master/Province/Provinces.json')
+        .then(response => {
+            provinces = response.data;
+        });
+    request = axios.get('https://raw.githubusercontent.com/macoymejia/geojsonph/master/Philippines/Luzon/Metropolitant%20Manila/MetropolitantManila.json')
+        .then(response => {
+            metro = response.data;
+        });
+
     const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
@@ -34,17 +51,17 @@ document.addEventListener("DOMContentLoaded", () => {
     map.on('load', function() {
         map.addSource('provinces', {
             type: 'geojson',
-            data: provinces.data,
+            data: provinces,
         });
 
         map.addSource('metro', {
             type: 'geojson',
-            data: metro.data,
+            data: metro,
         });
 
         map.addSource('cases', {
             type: 'geojson',
-            data: cases.data,
+            data: cases,
             cluster: true,
             clusterMaxZoom: 14,
             clusterRadius: 50,
@@ -52,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         map.addSource('hospitals', {
             type: 'geojson',
-            data: hospitals.data,
+            data: hospitals,
         });
 
         map.addLayer({
