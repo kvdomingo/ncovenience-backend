@@ -1,26 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+    async function getCases() {
+        try {
+            cases = await axios.get('/api/cases');
+            hospitals = await axios.get('/api/hospitals');
+            provinces = await axios.get('https://raw.githubusercontent.com/macoymejia/geojsonph/master/Province/Provinces.json');
+            metro = await axios.get('https://raw.githubusercontent.com/macoymejia/geojsonph/master/Philippines/Luzon/Metropolitant%20Manila/MetropolitantManila.json');
+
+            console.log(`Request for "cases" completed with code ${cases.request.status}`);
+            console.log(`Request for "hospitals" completed with code ${hospitals.request.status}`);
+            console.log(`Request for "provinces" completed with code ${provinces.request.status}`);
+            console.log(`Request for "metro" completed with code ${metro.request.status}`);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    getCases();
+    
     $("#map").first().css("height", window.innerHeight - $(".navbar").first().innerHeight());
     $("#sideDash").first()
         .css("overflow-y", "scroll")
         .css("height", window.innerHeight - $(".navbar").first().innerHeight());
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            cases = JSON.parse(this.responseText);
-        }
-    };
-    xhttp.open('GET', window.location.href + 'api/cases', true);
-    xhttp.send();
-
-    xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            hospitals = JSON.parse(this.responseText);
-        }
-    };
-    xhttp.open('GET', window.location.href + 'api/hospitals', true);
-    xhttp.send();
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrODhwbDk4MjBiNTAzbHM0enByZ21pZ3YifQ.xKWVuQAh7SnTyT-IL1rb1g';
 
@@ -52,17 +52,17 @@ document.addEventListener("DOMContentLoaded", () => {
     map.on('load', function() {
         map.addSource('provinces', {
             type: 'geojson',
-            data: 'https://raw.githubusercontent.com/macoymejia/geojsonph/master/Province/Provinces.json',
+            data: provinces.data,
         });
 
         map.addSource('metro', {
             type: 'geojson',
-            data: 'https://raw.githubusercontent.com/macoymejia/geojsonph/master/Philippines/Luzon/Metropolitant%20Manila/MetropolitantManila.json'
+            data: metro.data,
         });
 
         map.addSource('cases', {
             type: 'geojson',
-            data: cases,
+            data: cases.data,
             cluster: true,
             clusterMaxZoom: 14,
             clusterRadius: 50,
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         map.addSource('hospitals', {
             type: 'geojson',
-            data: hospitals,
+            data: hospitals.data,
         });
 
         map.addLayer({
