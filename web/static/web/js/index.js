@@ -1,3 +1,9 @@
+function parseEscapedJson(s) {
+    return s.replace(/\\u[0-9a-fA-F]{4}/gi, match => {
+        return String.fromCharCode(parseInt(match.replace(/\\u/g, ""), 16));
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     $("#map").first().css("height", window.innerHeight - $(".navbar").first().innerHeight());
     $("#sideDash").first()
@@ -6,10 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrODhwbDk4MjBiNTAzbHM0enByZ21pZ3YifQ.xKWVuQAh7SnTyT-IL1rb1g';
 
-    request = axios.get('/api/cases')
-        .then(response => {
-            cases = response.data;
-        });
+    cases = JSON.parse(parseEscapedJson(document.querySelector('#xKWVuQAh7SnTyT').value));
+
     request = axios.get('/api/hospitals')
         .then(response => {
             hospitals = response.data;

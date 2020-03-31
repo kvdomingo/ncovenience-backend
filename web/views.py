@@ -4,12 +4,15 @@ from time import time
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
+from django.utils.html import escapejs
 
 
 wake_time = time()
 
 def index(request):
     numbers = data.get_ph_numbers()
+    ph_conf = data.get_ph_confirmed()
+    ph_geo = data.df_to_geojson(ph_conf)
     context = {
         'active_page': 'index',
         'num_confirmed': numbers.query("`type` == 'confirmed'")['count'].values[0],
@@ -21,6 +24,7 @@ def index(request):
         'time_plot': plot.get_plot_over_time(),
         'age_plot': plot.get_plot_by_age(),
         'ncr_cases': plot.get_metro_cases(),
+        'ph_cases': escapejs(ph_geo),
     }
     return render(request, 'web/index.html.j2', context)
 

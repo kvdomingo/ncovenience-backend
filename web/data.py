@@ -28,7 +28,7 @@ def df_to_geojson(df):
                 properties=row.to_dict(),
             ))
     df.apply(insert_features, axis=1)
-    return geojson.dumps(geojson.FeatureCollection(features))
+    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':')))
 
 def date_to_datetime(df):
     for d in df.columns[4:]:
