@@ -154,6 +154,8 @@ STATIC_URL = '/static/'
 
 set_mapbox_access_token(os.environ['MAPBOX_ACCESS_TOKEN'])
 
-if bool(int(os.environ['ON_HEROKU'])):
+ON_HEROKU = bool(int(os.environ['ON_HEROKU']))
+
+if ON_HEROKU:
     import django_heroku
     django_heroku.settings(locals())

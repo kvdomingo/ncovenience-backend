@@ -6,8 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrODhwbDk4MjBiNTAzbHM0enByZ21pZ3YifQ.xKWVuQAh7SnTyT-IL1rb1g';
 
-    var cases, hospitals, provinces, metro;
-    
     request = axios.get('/api/cases')
         .then(response => {
             cases = response.data;
