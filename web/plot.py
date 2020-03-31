@@ -50,7 +50,7 @@ def get_plot_over_time():
 
 def get_plot_by_age():
     ph_conf = data.get_ph_confirmed()
-    valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For validation'").index).astype('uint8')
+    valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For Verification'").index).astype('uint8')
     conf_by_age = valid_age.groupby(pd.cut(valid_age, np.arange(10, 101, 10))).count()
     fig = go.Figure([
         go.Bar(

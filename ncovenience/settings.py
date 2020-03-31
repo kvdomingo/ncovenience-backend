@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'clear_cache',
 ]
 
 MIDDLEWARE = [
@@ -94,7 +93,7 @@ TEMPLATES = [
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': f'{PROJECT_DIR}/web/cache',
+        'LOCATION': f'{PROJECT_DIR}/cache',
         'TIMEOUT': 3600,
         'OPTIONS': {
             'MAX_ENTRIES': 1000,
