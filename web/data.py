@@ -63,6 +63,7 @@ def get_ph_confirmed():
         cache.set('ph_conf', ph_conf.to_json())
     else:
         ph_conf = pd.read_json(ph_conf)
+    ph_conf = ph_conf.replace(np.nan, '')
     return ph_conf
 
 def get_ph_geoapi():
