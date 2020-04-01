@@ -87,14 +87,19 @@ def get_ph_numbers():
     return numbers
 
 def get_ph_hospitals():
-    hospital = cache.get('hospital')
-    if hospital is None:
-        hosp_url = 'https://ncov-tracker-slexwwreja-de.a.run.app/hospital'
-        hospital = pd.read_json(request.urlopen(hosp_url))
-        cache.set('hospital', hospital.to_json())
+    hospitals = cache.get('hospital')
+    if hospitals is None:
+        ph_conf = get_ph_confirmed()
+        hospitals = ph_conf['facility'].value_counts()
+        hospitals['For validation'] += hospitals['']
+        hospitals = hospitals.drop('')
+        coordinates = [ph_conf.query(f'facility == "{x}"')['coordinates'].values[0] for x in hospitals.index]
+        hospitals = pd.DataFrame({'facility': hospitals.index, 'count': hospitals, 'coordinates': coordinates})
+        hospitals.index = range(len(hospitals))
+        cache.set('hospital', hospitals.to_json())
     else:
-        hospital = pd.read_json(hospital)
-    return hospital
+        hospitals = pd.read_json(hospitals)
+    return hospitals
 
 def get_confirmed_over_time():
     time_conf_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'

@@ -11,8 +11,8 @@ wake_time = time()
 
 def index(request):
     numbers = data.get_ph_numbers()
-    ph_conf = data.get_ph_confirmed()
-    ph_geo = data.df_to_geojson(ph_conf)
+    ph_hosp = data.df_to_geojson(data.get_ph_hospitals())
+    ph_geo = data.df_to_geojson(data.get_ph_confirmed())
     context = {
         'active_page': 'index',
         'num_confirmed': numbers.query("`type` == 'confirmed'")['count'].values[0],
@@ -25,6 +25,7 @@ def index(request):
         'age_plot': plot.get_plot_by_age(),
         'ncr_cases': plot.get_metro_cases(),
         'ph_cases': escapejs(ph_geo),
+        'hospitals': escapejs(ph_hosp),
     }
     return render(request, 'web/index.html.j2', context)
 
@@ -54,4 +55,4 @@ def api(request, page):
         else:
             raise Http404()
     else:
-        return HttpResponse(f'{request.method} not allowed')
+        return HttpResponse(f'Cannot {request.method} on /api/{page}')

@@ -12,12 +12,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrODhwbDk4MjBiNTAzbHM0enByZ21pZ3YifQ.xKWVuQAh7SnTyT-IL1rb1g';
 
-    cases = JSON.parse(parseEscapedJson(document.querySelector('#xKWVuQAh7SnTyT').value));
+    cases = JSON.parse(
+        parseEscapedJson(
+            document.querySelector('#f9063c359f30d308e94e90657d6242a1241e805e')
+                .value
+        )
+    );
 
-    request = axios.get('/api/hospitals')
-        .then(response => {
-            hospitals = response.data;
-        });
+    hospitals = JSON.parse(
+        parseEscapedJson(
+            document.querySelector('#b873053d13b7722f97f722df3a9a913ad27ec4da')
+                .value
+        )
+    );
+
     request = axios.get('https://raw.githubusercontent.com/macoymejia/geojsonph/master/Province/Provinces.json')
         .then(response => {
             provinces = response.data;
@@ -74,6 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
         map.addSource('hospitals', {
             type: 'geojson',
             data: hospitals,
+            cluster: true,
+            clusterMaxZoom: 14,
+            clusterRadius: 50,
         });
 
         map.addLayer({
@@ -234,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .setLngLat(coordinates)
                 .setHTML(`
                     facility: ${props.facility}<br />
-                    count: ${props.count_}
+                    count: ${props.count}
                 `)
                 .addTo(map);
         });

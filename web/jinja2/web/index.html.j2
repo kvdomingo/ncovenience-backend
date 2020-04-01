@@ -7,16 +7,16 @@
 
 
 <div class="row m-0 p-0">
-    <div class="col-md-7 m-0 p-0">
+    <div class="col-md-6 m-0 p-0">
         <div class="map" id="map"></div>
     </div>
-    <div class="col-md-5 p-3 text-right" id="sideDash">
-        <h1 class="display-5 mb-4">Dashboard</h1>
+    <div class="col-md-6 p-3 text-right" id="sideDash">
+        <h1 class="display-4 mb-4">Dashboard</h1>
         <div class="row row-cols-2 row-cols-xl-3">
             {% set panel_contents = [
                 ('border-warning', 'Confirmed', 'text-warning', num_confirmed),
                 ('border-success', 'Recovered', 'text-success', num_recovered),
-                ('border-danger', 'Deaths', 'text-danger', num_death),
+                ('border-danger', 'Deceased', 'text-danger', num_death),
                 ('border-muted', 'Tests', 'text-muted', num_tests),
                 ('border-secondary', 'PUMs', 'text-secondary', num_pum),
                 ('border-default', 'PUIs', 'text-default', num_pui),
@@ -49,6 +49,7 @@
     </div>
 </div>
 
-<input id="xKWVuQAh7SnTyT" value="{{ ph_cases }}" readonly type="hidden" />
+<input id="f9063c359f30d308e94e90657d6242a1241e805e" value="{{ ph_cases }}" readonly type="hidden" />
+<input id="b873053d13b7722f97f722df3a9a913ad27ec4da" value="{{ hospitals }}" readonly type="hidden" />
 
 {% endblock %}
