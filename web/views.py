@@ -22,6 +22,7 @@ def index(request):
         'num_pum': numbers.query("`type` == 'PUMs'")['count'].values[0],
         'num_pui': numbers.query("`type` == 'PUIs'")['count'].values[0],
         'time_plot': plot.get_plot_over_time(),
+        'delta_plot': plot.get_delta_over_time(),
         'age_plot': plot.get_plot_by_age(),
         'ncr_cases': plot.get_metro_cases(),
         'nationality_cases': plot.get_plot_by_nationality(),

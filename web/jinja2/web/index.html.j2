@@ -34,7 +34,8 @@
         </div>
 
         {% set charts = [
-            ('Daily cases', time_plot),
+            ('Cumulative daily cases', time_plot),
+            ('New daily cases', delta_plot),
             ('Cases by age group', age_plot),
             ('NCR cases', ncr_cases),
             ('Cases by nationality', nationality_cases),

@@ -14,6 +14,7 @@ def get_plot_over_time():
     time_conf_unique = data.get_confirmed_over_time()
     time_recov_unique = data.get_recovered_over_time()
     time_dead_unique = data.get_deaths_over_time()
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=time_conf_unique.keys()[2:],
@@ -48,7 +49,66 @@ def get_plot_over_time():
             'r': 0,
             'b': 0,
         },
-        xaxis_title='number of cases',
+        yaxis_title='cumulative number of cases',
+    )
+    return plot(fig, output_type='div', include_plotlyjs=False)
+
+def get_delta_over_time():
+    time_conf_unique = data.get_confirmed_over_time()
+    time_recov_unique = data.get_recovered_over_time()
+    time_dead_unique = data.get_deaths_over_time()
+
+    ph_time = time_conf_unique.query("`Country/Region` == 'Philippines'")
+    ph_time = ph_time[ph_time.columns[4:]]
+    delta_conf = [0, *np.diff(ph_time.values.squeeze())]
+    conf_time = ph_time.copy().columns
+    ph_time = time_recov_unique.query("`Country/Region` == 'Philippines'")
+    ph_time = ph_time[ph_time.columns[4:]]
+    delta_recov = [0, *np.diff(ph_time.values.squeeze())]
+    recov_time = ph_time.copy().columns
+    ph_time = time_dead_unique.query("`Country/Region` == 'Philippines'")
+    ph_time = ph_time[ph_time.columns[4:]]
+    delta_dead = [0, *np.diff(ph_time.values.squeeze())]
+    dead_time = ph_time.copy().columns
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=conf_time,
+        y=delta_conf,
+        name='Confirmed',
+        marker_color=bs4_warning,
+        mode='lines',
+        text=list(map(lambda x: str(x) + ' new cases', delta_conf)),
+    ))
+    fig.add_trace(go.Scatter(
+        x=dead_time,
+        y=delta_dead,
+        name='Deaths',
+        marker_color=bs4_danger,
+        mode='lines',
+        text=list(map(lambda x: str(x) + ' new deaths', delta_recov)),
+    ))
+    fig.add_trace(go.Scatter(
+        x=recov_time,
+        y=delta_recov,
+        name='Recovered',
+        marker_color=bs4_success,
+        mode='lines',
+        text=list(map(lambda x: str(x) + ' new recoveries', delta_dead)),
+    ))
+    fig.update_layout(
+        legend={
+            'x': 0,
+            'y': 1,
+        },
+        legend_orientation='h',
+        margin={
+            't': 0,
+            'l': 0,
+            'r': 0,
+            'b': 0,
+        },
+        yaxis_title='new number of cases',
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
 
