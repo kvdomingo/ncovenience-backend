@@ -24,6 +24,7 @@ def index(request):
         'time_plot': plot.get_plot_over_time(),
         'age_plot': plot.get_plot_by_age(),
         'ncr_cases': plot.get_metro_cases(),
+        'nationality_cases': plot.get_plot_by_nationality(),
         'ph_cases': escapejs(ph_geo),
         'hospitals': escapejs(ph_hosp),
     }

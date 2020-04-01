@@ -32,7 +32,7 @@ def get_plot_over_time():
     fig.add_trace(go.Scatter(
         x=time_dead_unique.keys()[2:],
         y=time_dead_unique.query("`Country/Region` == 'Philippines'")[time_dead_unique.keys()[2:]].sum().values,
-        name='Deaths',
+        name='Deceased',
         marker_color=bs4_danger,
         mode='lines',
     ))
@@ -160,5 +160,32 @@ def get_metro_cases():
         },
         barmode='stack',
         legend_orientation='h',
+    )
+    return plot(fig, output_type='div', include_plotlyjs=False)
+
+def get_plot_by_nationality():
+    ph_conf = data.get_ph_confirmed()
+    nationality = ph_conf['nationality'].value_counts()
+    nat = nationality.index.to_list()
+    nat[1] = 'For validation'
+    nationality.index = nat
+
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        labels=nationality.index,
+        values=nationality.values,
+    ))
+    fig.update_traces(
+        textinfo='value+label',
+        textposition='none',
+    )
+    fig.update_layout(
+        uniformtext_mode='hide',
+        margin={
+            't': 0,
+            'l': 0,
+            'r': 0,
+            'b': 0,
+        },
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
