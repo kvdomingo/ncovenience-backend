@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objs as go
+from datetime import datetime
 from plotly.offline import plot
 from . import data
 
@@ -52,6 +53,55 @@ def get_plot_over_time():
         yaxis_title='cumulative number of cases',
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
+
+def get_world_over_time():
+    time_conf_unique = data.get_confirmed_over_time()
+    time_recov_unique = data.get_recovered_over_time()
+    time_dead_unique = data.get_deaths_over_time()
+
+    time_conf_unique = time_conf_unique[time_conf_unique.columns[2:]]
+    world_conf = time_conf_unique.sum()
+
+    time_recov_unique = time_recov_unique[time_recov_unique.columns[2:]]
+    world_recov = time_recov_unique.sum()
+
+    time_dead_unique = time_dead_unique[time_dead_unique.columns[2:]]
+    world_dead = time_dead_unique.sum()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=world_conf.index,
+        y=world_conf.values,
+        marker_color=bs4_warning,
+        name='Confirmed',
+    ))
+    fig.add_trace(go.Scatter(
+        x=world_recov.index,
+        y=world_recov.values,
+        marker_color=bs4_success,
+        name='Recovered',
+    ))
+    fig.add_trace(go.Scatter(
+        x=world_dead.index,
+        y=world_dead.values,
+        marker_color=bs4_danger,
+        name='Deceased',
+    ))
+    fig.update_layout(
+        legend_orientation='h',
+        legend={
+            'x': 0,
+            'y': 1,
+        },
+        margin={
+            't': 0,
+            'l': 0,
+            'r': 0,
+            'b': 0,
+        }
+    )
+    return plot(fig, output_type='div', include_plotlyjs=False)
+
 
 def get_delta_over_time():
     time_conf_unique = data.get_confirmed_over_time()

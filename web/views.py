@@ -22,6 +22,7 @@ def index(request):
         'num_pum': numbers.query("`type` == 'PUMs'")['count'].values[0],
         'num_pui': numbers.query("`type` == 'PUIs'")['count'].values[0],
         'time_plot': plot.get_plot_over_time(),
+        'world_plot': plot.get_world_over_time(),
         'delta_plot': plot.get_delta_over_time(),
         'age_plot': plot.get_plot_by_age(),
         'ncr_cases': plot.get_metro_cases(),
@@ -32,19 +33,27 @@ def index(request):
     return render(request, 'web/index.html.j2', context)
 
 
-def api_health(request):
+def api_docs(request):
+    return render(request, 'web/api_docs.html.j2')
+
+
+def api_name(request):
     if request.method == 'GET':
-        health = {
+        response = {
             'name': 'ncovenience',
-            'uptime': time() - wake_time,
         }
-        return JsonResponse(health)
+        return JsonResponse(response)
     else:
         return HttpResponse(f'{request.method} not allowed')
 
 def api(request, page):
     if request.method == 'GET':
-        if page == 'cases':
+        if page == 'health':
+            response = {
+                'uptime': time() - wake_time,
+            }
+            return JsonResponse(response)
+        elif page == 'cases':
             ph_conf = data.get_ph_confirmed()
             ph_geo = data.df_to_geojson(ph_conf)
             ph_geojson = json.loads(ph_geo)

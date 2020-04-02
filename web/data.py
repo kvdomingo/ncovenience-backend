@@ -91,9 +91,12 @@ def get_ph_hospitals():
     if hospitals is None:
         ph_conf = get_ph_confirmed()
         hospitals = ph_conf['facility'].value_counts()
-        hospitals['For validation'] += hospitals['']
-        hospitals = hospitals.drop('')
-        coordinates = [ph_conf.query(f'facility == "{x}"')['coordinates'].values[0] for x in hospitals.index]
+        coordinates = []
+        for x in hospitals.index:
+            if '"' in x:
+                coordinates.append(ph_conf.query(f"facility == '{x}'")['coordinates'].values[0])
+            else:
+                coordinates.append(ph_conf.query(f'facility == "{x}"')['coordinates'].values[0])
         hospitals = pd.DataFrame({'facility': hospitals.index, 'count': hospitals, 'coordinates': coordinates})
         hospitals.index = range(len(hospitals))
         cache.set('hospital', hospitals.to_json())
