@@ -10,24 +10,37 @@
     <div class="col-md-6 m-0 p-0">
         <div class="map" id="map"></div>
     </div>
-    <div class="col-md-6 p-3 text-right" id="sideDash">
+    <div class="col-md-6 p-3" id="sideDash">
         <h1 class="display-4 mb-4">Dashboard</h1>
+        {% set panel_contents = [
+            ('warning', 'Confirmed', num_confirmed, delta_counts.delta_conf, 'fas fa-users'),
+            ('success', 'Recovered', num_recovered, delta_counts.delta_recov, 'fas fa-first-aid'),
+            ('danger', 'Deceased', num_death, delta_counts.delta_dead, 'fas fa-skull-crossbones'),
+            ('muted', 'Tests', num_tests, 1, 'fas fa-stethoscope'),
+            ('secondary', 'PUMs', num_pum, 1, 'fas fa-temperature-high'),
+            ('default', 'PUIs', num_pui, 1, 'fas fa-search'),
+        ] %}
         <div class="row row-cols-2 row-cols-xl-3">
-            {% set panel_contents = [
-                ('border-warning', 'Confirmed', 'text-warning', num_confirmed),
-                ('border-success', 'Recovered', 'text-success', num_recovered),
-                ('border-danger', 'Deceased', 'text-danger', num_death),
-                ('border-muted', 'Tests', 'text-muted', num_tests),
-                ('border-secondary', 'PUMs', 'text-secondary', num_pum),
-                ('border-default', 'PUIs', 'text-default', num_pui),
-            ] %}
-            {% for border, header, text, num in panel_contents %}
+            {% for color, header, num, delta, icon in panel_contents %}
                 <div class="col mx-0 px-2">
-                    <div class="card {{ border }} mb-3">
-                        <div class="card-header">{{ header }}</div>
-                        <div class="card-body {{ text }}">
+                    <div class="card mb-3">
+                        <div class="card-header text-muted text-left">
+                            <i class="{{ icon }}"></i>&nbsp;{{ header }}
+                        </div>
+                        <div class="card-body text-center text-{{ color }}">
                             <h1 class="card-title display-5">{{ num }}</h1>
                         </div>
+                        {% if header in ['Confirmed', 'Recovered', 'Deceased'] %}
+                            {% if delta|int > 0 %}
+                                <div class="card-footer text-right text-{{ 'success' if header in ['Recovered'] else 'danger' }}">
+                                    +{{ delta }} (+{{ (delta/num * 100)|round(2) }}%)
+                                </div>
+                            {% else %}
+                                <div class="card-footer text-right text-{{ 'danger' if header in ['Recovered'] else 'success' }}">
+                                    {{ delta }} ({{ (delta/num * 100)|round(2) }}%)
+                                </div>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -42,9 +55,9 @@
             ('Cases by nationality', nationality_cases),
         ] %}
         {% for title, chart in charts %}
-            <div class="mb-3 mx-0">
-                <div class="card border-muted">
-                    <div class="card-header">{{ title }}</div>
+            <div class="mb-3 mx-0 px-0">
+                <div class="card">
+                    <div class="card-header text-uppercase text-muted">{{ title }}</div>
                     <div class="card-body m-0">{{ chart }}</div>
                 </div>
             </div>

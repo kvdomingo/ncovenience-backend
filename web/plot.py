@@ -54,6 +54,7 @@ def get_plot_over_time():
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
 
+
 def get_world_over_time():
     time_conf_unique = data.get_confirmed_over_time()
     time_recov_unique = data.get_recovered_over_time()
@@ -162,6 +163,7 @@ def get_delta_over_time():
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
 
+
 def get_plot_by_age():
     ph_conf = data.get_ph_confirmed()
     valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For Verification'").index).astype('uint8')
@@ -183,7 +185,7 @@ def get_plot_by_age():
             y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
             text=cases_by_age,
             textposition='auto',
-            name='Confirmed',
+            name='Active',
             marker_color=bs4_warning,
             orientation='h',
         )
@@ -225,6 +227,7 @@ def get_plot_by_age():
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
 
+
 def get_metro_cases():
     ph_conf = data.get_ph_confirmed()
     metro_conf = ph_conf.query("region == 'NCR'")
@@ -238,7 +241,7 @@ def get_metro_cases():
         x=metro_city_cases.values,
         text=metro_city_cases.values,
         textposition='auto',
-        name='Confirmed',
+        name='Active',
         marker_color=bs4_warning,
         orientation='h',
     ))
@@ -272,6 +275,7 @@ def get_metro_cases():
         legend_orientation='h',
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
+
 
 def get_plot_by_nationality():
     ph_conf = data.get_ph_confirmed()

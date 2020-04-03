@@ -21,6 +21,7 @@ def index(request):
         'num_tests': numbers.query("`type` == 'tests'")['count'].values[0],
         'num_pum': numbers.query("`type` == 'PUMs'")['count'].values[0],
         'num_pui': numbers.query("`type` == 'PUIs'")['count'].values[0],
+        'delta_counts': data.get_ph_numbers_delta(),
         'time_plot': plot.get_plot_over_time(),
         'world_plot': plot.get_world_over_time(),
         'delta_plot': plot.get_delta_over_time(),

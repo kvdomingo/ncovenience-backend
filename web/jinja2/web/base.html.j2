@@ -24,7 +24,7 @@
 
     <title>COVID-19 PH Tracker</title>
 
-    {% if not settings.DEBUG %}
+    {% if not settings.DEBUG and settings.ON_HEROKU %}
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162676656-1"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
