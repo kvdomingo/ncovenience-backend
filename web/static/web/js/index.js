@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .css("overflow-y", "scroll")
         .css("height", window.innerHeight - $(".navbar").first().innerHeight());
 
-    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrODhwbDk4MjBiNTAzbHM0enByZ21pZ3YifQ.xKWVuQAh7SnTyT-IL1rb1g';
+    mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrOGtiYnZ4aTAwM2EzZm8xOTdmMjU2bXQifQ.zXF6zxjKqz660if2tOcdDw';
 
     cases = JSON.parse(
         parseEscapedJson(
