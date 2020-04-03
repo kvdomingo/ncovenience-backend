@@ -90,11 +90,13 @@ TEMPLATES = [
 ]
 
 
+DEFAULT_TIMEOUT = 60*15
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': f'{PROJECT_DIR}/cache',
-        'TIMEOUT': 60*15,
+        'TIMEOUT': DEFAULT_TIMEOUT,
         'OPTIONS': {
             'MAX_ENTRIES': 1000,
         }
