@@ -259,3 +259,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+window.addEventListener('resize', () => {
+    $("#map").first().css("height", window.innerHeight - $(".navbar").first().innerHeight());
+    $("#sideDash").first()
+        .css("overflow-y", "scroll")
+        .css("height", window.innerHeight - $(".navbar").first().innerHeight());
+});
