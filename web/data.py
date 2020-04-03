@@ -6,6 +6,8 @@ from datetime import datetime
 from django.core.cache import cache
 
 
+# Convenience functions
+
 def df_to_geojson(df):
     features = []
     def insert_features(row):
@@ -42,6 +44,8 @@ def count_latest(df):
     total = df_unique[df_unique.keys()[-1]][df_unique.index.tolist().index('Philippines')]
     return total
 
+
+# Data extractors
 
 def get_ph_confirmed():
     ph_conf = cache.get('ph_conf')
