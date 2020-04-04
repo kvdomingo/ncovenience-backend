@@ -8,7 +8,7 @@ from django.core.cache import cache
 
 # Convenience functions
 
-def df_to_geojson(df):
+def df_to_geojson(df, **kwargs):
     features = []
     def insert_features(row):
         try:
@@ -30,7 +30,7 @@ def df_to_geojson(df):
                 properties=row.to_dict(),
             ))
     df.apply(insert_features, axis=1)
-    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':')))
+    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':', **kwargs))
 
 
 def date_to_datetime(df):
