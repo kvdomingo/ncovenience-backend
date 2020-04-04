@@ -13,9 +13,9 @@
     <div class="col-md-6 p-3" id="sideDash">
         <h1 class="display-4 mb-4">Dashboard</h1>
         {% set panel_contents = [
-            ('warning', 'Confirmed', num_confirmed, delta_counts.delta_conf, 'fas fa-users'),
-            ('success', 'Recovered', num_recovered, delta_counts.delta_recov, 'fas fa-first-aid'),
-            ('danger', 'Deceased', num_death, delta_counts.delta_dead, 'fas fa-skull-crossbones'),
+            ('warning', 'Confirmed', num_confirmed, delta_counts.confirmed, 'fas fa-users'),
+            ('success', 'Recovered', num_recovered, delta_counts.recovered, 'fas fa-first-aid'),
+            ('danger', 'Deceased', num_death, delta_counts.deaths, 'fas fa-skull-crossbones'),
             ('muted', 'Tests', num_tests, 1, 'fas fa-stethoscope'),
             ('secondary', 'PUMs', num_pum, 1, 'fas fa-temperature-high'),
             ('default', 'PUIs', num_pui, 1, 'fas fa-search'),
