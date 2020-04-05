@@ -8,7 +8,7 @@ from django.core.cache import cache
 
 # Convenience functions
 
-def df_to_geojson(df):
+def df_to_geojson(df, **kwargs):
     features = []
     def insert_features(row):
         try:
@@ -30,7 +30,7 @@ def df_to_geojson(df):
                 properties=row.to_dict(),
             ))
     df.apply(insert_features, axis=1)
-    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':')))
+    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':')), **kwargs)
 
 
 def date_to_datetime(df):
@@ -86,49 +86,36 @@ def get_ph_numbers():
         cache.set('numbers', numbers.to_json())
     else:
         numbers = pd.read_json(numbers)
-    return numbers
+    numbers_type = numbers['type'].to_list()
+    numbers_count = numbers['count'].to_list()
+    return dict(zip(numbers_type, numbers_count))
 
 
 def get_ph_numbers_delta():
-    time_conf_unique = get_confirmed_over_time()
-    time_recov_unique = get_recovered_over_time()
-    time_dead_unique = get_deaths_over_time()
     numbers = get_ph_numbers()
+    case_names = [
+        'confirmed',
+        'recovered',
+        'deaths',
+    ]
+    time_unique = [
+        get_confirmed_over_time(),
+        get_recovered_over_time(),
+        get_deaths_over_time(),
+    ]
+    delta = []
 
-    ph_time = time_conf_unique.query("`Country/Region` == 'Philippines'")
-    ph_time = ph_time[ph_time.columns[4:]]
-    delta_conf = [0, *np.diff(ph_time.values.squeeze())]
-    conf_time = ph_time.copy().columns
-    today_count_conf = numbers.query("`type` == 'confirmed'")['count'].values[0]
-    remote_count = ph_time[conf_time[-1]].values[0]
-    if today_count_conf == remote_count:
-        remote_count = ph_time[conf_time[-2]].values[0]
-    delta_conf = today_count_conf - remote_count
-
-    ph_time = time_recov_unique.query("`Country/Region` == 'Philippines'")
-    ph_time = ph_time[ph_time.columns[4:]]
-    delta_recov = [0, *np.diff(ph_time.values.squeeze())]
-    recov_time = ph_time.copy().columns
-    today_count_recov = numbers.query("`type` == 'recovered'")['count'].values[0]
-    remote_count = ph_time[recov_time[-1]].values[0]
-    if today_count_recov == remote_count:
-        remote_count = ph_time[recov_time[-2]].values[0]
-    delta_recov = today_count_recov - remote_count
-
-    ph_time = time_dead_unique.query("`Country/Region` == 'Philippines'")
-    ph_time = ph_time[ph_time.columns[4:]]
-    delta_dead = [0, *np.diff(ph_time.values.squeeze())]
-    dead_time = ph_time.copy().columns
-    today_count_dead = numbers.query("`type` == 'deaths'")['count'].values[0]
-    remote_count = ph_time[dead_time[-1]].values[0]
-    if today_count_dead == remote_count:
-        remote_count = ph_time[dead_time[-2]].values[0]
-    delta_dead = today_count_dead - remote_count
-    return {
-        'delta_conf': delta_conf,
-        'delta_recov': delta_recov,
-        'delta_dead': delta_dead,
-    }
+    for unique, name in zip(time_unique, case_names):
+        ph_time = unique.query("`Country/Region` == 'Philippines'")
+        ph_time = ph_time[ph_time.columns[4:]]
+        ddelta = [0, *np.diff(ph_time.values.squeeze())]
+        time = ph_time.copy().columns
+        today_count = numbers[name]
+        remote_count = ph_time[time[-1]].values[0]
+        if today_count == remote_count:
+            remote_count = ph_time[time[-2]].values[0]
+        delta.append(today_count - remote_count)
+    return dict(zip(case_names, delta))
 
 
 def get_ph_hospitals():

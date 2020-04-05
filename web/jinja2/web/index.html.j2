@@ -13,33 +13,33 @@
     <div class="col-md-6 p-3" id="sideDash">
         <h1 class="display-4 mb-4">Dashboard</h1>
         {% set panel_contents = [
-            ('warning', 'Confirmed', num_confirmed, delta_counts.delta_conf, 'fas fa-users'),
-            ('success', 'Recovered', num_recovered, delta_counts.delta_recov, 'fas fa-first-aid'),
-            ('danger', 'Deceased', num_death, delta_counts.delta_dead, 'fas fa-skull-crossbones'),
-            ('muted', 'Tests', num_tests, 1, 'fas fa-stethoscope'),
-            ('secondary', 'PUMs', num_pum, 1, 'fas fa-temperature-high'),
-            ('default', 'PUIs', num_pui, 1, 'fas fa-search'),
+            ('warning', 'Confirmed', numbers.confirmed, delta_counts.confirmed, 'users'),
+            ('success', 'Recovered', numbers.recovered, delta_counts.recovered, 'first-aid'),
+            ('danger', 'Deceased', numbers.deaths, delta_counts.deaths, 'skull-crossbones'),
+            ('muted', 'Tests', numbers.tests, none, 'stethoscope'),
+            ('secondary', 'PUMs', numbers.PUMs, none, 'temperature-high'),
+            ('default', 'PUIs', numbers.PUIs, none, 'search'),
         ] %}
         <div class="row row-cols-2 row-cols-xl-3">
             {% for color, header, num, delta, icon in panel_contents %}
                 <div class="col mx-0 px-2">
                     <div class="card mb-3">
                         <div class="card-header text-muted text-left">
-                            <i class="{{ icon }}"></i>&nbsp;{{ header }}
+                            <i class="fas fa-{{ icon }}"></i>&nbsp;{{ header }}
                         </div>
                         <div class="card-body text-center text-{{ color }}">
                             <h1 class="card-title display-5">{{ num }}</h1>
                         </div>
-                        {% if header in ['Confirmed', 'Recovered', 'Deceased'] %}
-                            {% if delta|int > 0 %}
-                                <div class="card-footer text-right text-{{ 'success' if header in ['Recovered'] else 'danger' }}">
-                                    +{{ delta }} (+{{ (delta/num * 100)|round(2) }}%)
-                                </div>
-                            {% else %}
-                                <div class="card-footer text-right text-{{ 'danger' if header in ['Recovered'] else 'success' }}">
-                                    {{ delta }} ({{ (delta/num * 100)|round(2) }}%)
-                                </div>
-                            {% endif %}
+                        {% if delta is none %}
+                            <div class="card-footer text-right">&nbsp;</div>
+                        {% elif delta|int >= 0 %}
+                            <div class="card-footer text-right text-{{ 'success' if header == 'Recovered' else 'danger' }}">
+                                +{{ delta }} (+{{ (delta/num * 100)|round(2) }}%)
+                            </div>
+                        {% else %}
+                            <div class="card-footer text-right text-{{ 'danger' if header == 'Recovered' else 'success' }}">
+                                {{ delta }} ({{ (delta/num * 100)|round(2) }}%)
+                            </div>
                         {% endif %}
                     </div>
                 </div>
