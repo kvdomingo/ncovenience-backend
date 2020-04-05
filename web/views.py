@@ -10,17 +10,11 @@ from django.utils.html import escapejs
 wake_time = time()
 
 def index(request):
-    numbers = data.get_ph_numbers()
     ph_hosp = data.df_to_geojson(data.get_ph_hospitals())
     ph_geo = data.df_to_geojson(data.get_ph_confirmed())
     context = {
         'active_page': 'index',
-        'num_confirmed': numbers.query("`type` == 'confirmed'")['count'].values[0],
-        'num_recovered': numbers.query("`type` == 'recovered'")['count'].values[0],
-        'num_death': numbers.query("`type` == 'deaths'")['count'].values[0],
-        'num_tests': numbers.query("`type` == 'tests'")['count'].values[0],
-        'num_pum': numbers.query("`type` == 'PUMs'")['count'].values[0],
-        'num_pui': numbers.query("`type` == 'PUIs'")['count'].values[0],
+        'numbers': data.get_ph_numbers(),
         'delta_counts': data.get_ph_numbers_delta(),
         'time_plot': plot.get_plot_over_time(),
         'world_plot': plot.get_world_over_time(),

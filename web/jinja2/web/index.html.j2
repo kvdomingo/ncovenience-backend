@@ -13,12 +13,12 @@
     <div class="col-md-6 p-3" id="sideDash">
         <h1 class="display-4 mb-4">Dashboard</h1>
         {% set panel_contents = [
-            ('warning', 'Confirmed', num_confirmed, delta_counts.confirmed, 'users'),
-            ('success', 'Recovered', num_recovered, delta_counts.recovered, 'first-aid'),
-            ('danger', 'Deceased', num_death, delta_counts.deaths, 'skull-crossbones'),
-            ('muted', 'Tests', num_tests, none, 'stethoscope'),
-            ('secondary', 'PUMs', num_pum, none, 'temperature-high'),
-            ('default', 'PUIs', num_pui, none, 'search'),
+            ('warning', 'Confirmed', numbers.confirmed, delta_counts.confirmed, 'users'),
+            ('success', 'Recovered', numbers.recovered, delta_counts.recovered, 'first-aid'),
+            ('danger', 'Deceased', numbers.deaths, delta_counts.deaths, 'skull-crossbones'),
+            ('muted', 'Tests', numbers.tests, none, 'stethoscope'),
+            ('secondary', 'PUMs', numbers.PUMs, none, 'temperature-high'),
+            ('default', 'PUIs', numbers.PUIs, none, 'search'),
         ] %}
         <div class="row row-cols-2 row-cols-xl-3">
             {% for color, header, num, delta, icon in panel_contents %}

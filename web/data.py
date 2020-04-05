@@ -30,7 +30,7 @@ def df_to_geojson(df, **kwargs):
                 properties=row.to_dict(),
             ))
     df.apply(insert_features, axis=1)
-    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':', **kwargs))
+    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':')), **kwargs)
 
 
 def date_to_datetime(df):
@@ -86,7 +86,9 @@ def get_ph_numbers():
         cache.set('numbers', numbers.to_json())
     else:
         numbers = pd.read_json(numbers)
-    return numbers
+    numbers_type = numbers['type'].to_list()
+    numbers_count = numbers['count'].to_list()
+    return dict(zip(numbers_type, numbers_count))
 
 
 def get_ph_numbers_delta():
@@ -106,9 +108,9 @@ def get_ph_numbers_delta():
     for unique, name in zip(time_unique, case_names):
         ph_time = unique.query("`Country/Region` == 'Philippines'")
         ph_time = ph_time[ph_time.columns[4:]]
-        delta = [0, *np.diff(ph_time.values.squeeze())]
+        ddelta = [0, *np.diff(ph_time.values.squeeze())]
         time = ph_time.copy().columns
-        today_count = numbers.query(f"`type` == '{name}'")['count'].values[0]
+        today_count = numbers[name]
         remote_count = ph_time[time[-1]].values[0]
         if today_count == remote_count:
             remote_count = ph_time[time[-2]].values[0]
