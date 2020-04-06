@@ -21,25 +21,31 @@
             ('secondary', 'PUMs', numbers.PUMs, none, 'temperature-high'),
             ('default', 'PUIs', numbers.PUIs, none, 'search'),
         ] %}
-        <div class="row row-cols-2 row-cols-xl-3">
+        <div class="row row-cols-2 row-cols-xl-3 mt-3">
             {% for color, header, num, delta, icon in panel_contents %}
                 <div class="col mx-0 px-2">
                     <div class="card mb-3">
                         <div class="card-header text-muted text-left">
                             <i class="fas fa-{{ icon }}"></i>&nbsp;{{ header }}
                         </div>
-                        <div class="card-body text-center text-{{ color }}">
+                        <div class="card-body text-center text-{{ 'muted' if num == 0 else color }}">
                             <h1 class="card-title display-5">{{ num }}</h1>
                         </div>
                         {% if delta is none %}
-                            <div class="card-footer text-right">&nbsp;</div>
+                            <div class="card-footer text-right {{ 'text-muted' if num == 0 }}">
+                                {% if num == 0 %}
+                                    <small>(No data available)</small>
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </div>
                         {% elif delta|int >= 0 %}
                             <div class="card-footer text-right text-{{ 'success' if header == 'Recovered' else 'danger' }}">
-                                +{{ delta }} (+{{ (delta/num * 100)|round(2) }}%)
+                                <small>+{{ delta }} (+{{ (delta/num * 100)|round(2) }}%)</small>
                             </div>
                         {% else %}
                             <div class="card-footer text-right text-{{ 'danger' if header == 'Recovered' else 'success' }}">
-                                {{ delta }} ({{ (delta/num * 100)|round(2) }}%)
+                                <small>{{ delta }} ({{ (delta/num * 100)|round(2) }}%)</small>
                             </div>
                         {% endif %}
                     </div>
