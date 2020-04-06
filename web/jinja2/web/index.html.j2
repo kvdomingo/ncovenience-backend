@@ -10,7 +10,7 @@
     <div class="col-md-6 m-0 p-0">
         <div class="map" id="map"></div>
     </div>
-    <div class="col-md-6 p-3" id="sideDash">
+    <div class="col-md-6 py-3" id="sideDash">
             <h1 class="display-4 mb-4 text-left display-inline">Dashboard</h1>&nbsp;
             <p class="text-muted display-inline">(updated {{ last_updated }})</p>
         {% set panel_contents = [
@@ -63,6 +63,12 @@
                 </div>
             </div>
         {% endfor %}
+
+        <footer class="page-footer font-small bg-dark text-light mt-5">
+            <div class="footer-copyright text-center py-3">
+                &copy; {{ now.year }} <a href="https://github.com/kvdomingo">Kenneth V. Domongo</a>
+            </div>
+        </footer>
     </div>
 </div>
 

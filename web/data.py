@@ -44,12 +44,13 @@ def get_ph_numbers():
         numbers_url = 'https://ncov-tracker-slexwwreja-de.a.run.app/numbers'
         numbers = pd.read_json(request.urlopen(numbers_url))
         cache.set('numbers', numbers.to_json())
-        cache.set('confirmed', numbers.query("`type` == 'confirmed'").values[0], timeout=60*15)
     else:
         numbers = pd.read_json(numbers)
     numbers_type = numbers['type'].to_list()
     numbers_count = numbers['count'].to_list()
-    return dict(zip(numbers_type, numbers_count))
+    ph_numbers = dict(zip(numbers_type, numbers_count))
+    cache.set('confirmed', ph_numbers['confirmed'], timeout=60*15)
+    return ph_numbers
 
 
 def get_ph_numbers_delta():

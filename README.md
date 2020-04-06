@@ -8,30 +8,30 @@
 
 **Format**: JSON/GeoJSON
 
----
 
-- `GET /`
+
+- `GET` /
 
     Returns the name of the API.
     ```
     > curl -X https://ncovenience.herokuapp.com/api
     ```
----
-- `GET /health`
+
+- `GET` /health
 
     Check the health/uptime of the API.
     ```
     > curl -X https://ncovenience.herokuapp.com/api/health
     ```
----
-- `GET /cases`
+
+- `GET` /cases
 
     Returns data for all PH cases.
     ```
     > curl -X https://ncovenience.herokuapp.com/api/cases
     ```
----
-- `GET /hospitals`
+
+- `GET` /hospitals
 
     Returns cases for hospitals/medical facilities.
     ```
