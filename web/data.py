@@ -4,48 +4,8 @@ import numpy as np
 from urllib import request
 from datetime import datetime
 from django.core.cache import cache
+from . import functions
 
-
-# Convenience functions
-
-def df_to_geojson(df, **kwargs):
-    features = []
-    def insert_features(row):
-        try:
-            features.append(geojson.Feature(
-                geometry=geojson.Point((
-                    row['coordinates']['lng'],
-                    row['coordinates']['lat'],
-                    0,
-                )),
-                properties=row.to_dict(),
-            ))
-        except KeyError:
-            features.append(geojson.Feature(
-                geometry=geojson.Point((
-                    row['longitude'],
-                    row['latitude'],
-                    0,
-                )),
-                properties=row.to_dict(),
-            ))
-    df.apply(insert_features, axis=1)
-    return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':')), **kwargs)
-
-
-def date_to_datetime(df):
-    for d in df.columns[4:]:
-        df = df.rename(columns={d: datetime.strptime(d, '%m/%d/%y')})
-    return df
-
-
-def count_latest(df):
-    df_unique = df.groupby('Country/Region').sum()
-    total = df_unique[df_unique.keys()[-1]][df_unique.index.tolist().index('Philippines')]
-    return total
-
-
-# Data extractors
 
 def get_ph_confirmed():
     ph_conf = cache.get('ph_conf')
@@ -70,7 +30,7 @@ def get_ph_confirmed():
 def get_ph_geoapi():
     ph_conf_geo = cache.get('ph_conf_geo')
     if ph_conf_geo is None:
-        ph_conf_geo = df_to_geojson(ph_conf)
+        ph_conf_geo = functions.df_to_geojson(ph_conf)
         cache.set('ph_conf_geo', ph_conf_geo)
         ph_conf_geo = pd.read_json(ph_conf_geo)
     else:
@@ -84,6 +44,7 @@ def get_ph_numbers():
         numbers_url = 'https://ncov-tracker-slexwwreja-de.a.run.app/numbers'
         numbers = pd.read_json(request.urlopen(numbers_url))
         cache.set('numbers', numbers.to_json())
+        cache.set('confirmed', numbers.query("`type` == 'confirmed'").values[0], timeout=60*15)
     else:
         numbers = pd.read_json(numbers)
     numbers_type = numbers['type'].to_list()
@@ -139,21 +100,21 @@ def get_ph_hospitals():
 
 def get_confirmed_over_time():
     time_conf_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
-    time_conf = date_to_datetime(pd.read_csv(request.urlopen(time_conf_url)))
+    time_conf = functions.date_to_datetime(pd.read_csv(request.urlopen(time_conf_url)))
     time_conf_unique = time_conf.groupby('Country/Region').sum()
     return time_conf_unique
 
 
 def get_recovered_over_time():
     time_recov_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv'
-    time_recov = date_to_datetime(pd.read_csv(request.urlopen(time_recov_url)))
+    time_recov = functions.date_to_datetime(pd.read_csv(request.urlopen(time_recov_url)))
     time_recov_unique = time_recov.groupby('Country/Region').sum()
     return time_recov_unique
 
 
 def get_deaths_over_time():
     time_dead_url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'
-    time_dead = date_to_datetime(pd.read_csv(request.urlopen(time_dead_url)))
+    time_dead = functions.date_to_datetime(pd.read_csv(request.urlopen(time_dead_url)))
     time_dead_unique = time_dead.groupby('Country/Region').sum()
     return time_dead_unique
 

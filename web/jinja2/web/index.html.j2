@@ -11,7 +11,8 @@
         <div class="map" id="map"></div>
     </div>
     <div class="col-md-6 p-3" id="sideDash">
-        <h1 class="display-4 mb-4">Dashboard</h1>
+            <h1 class="display-4 mb-4 text-left display-inline">Dashboard</h1>&nbsp;
+            <p class="text-muted display-inline">(updated {{ last_updated }})</p>
         {% set panel_contents = [
             ('warning', 'Confirmed', numbers.confirmed, delta_counts.confirmed, 'users'),
             ('success', 'Recovered', numbers.recovered, delta_counts.recovered, 'first-aid'),

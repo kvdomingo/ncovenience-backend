@@ -8,3 +8,7 @@ html, body {
     height: 400px;
     width: 100%;
 }
+
+.display-inline {
+    display: inline;
+}
