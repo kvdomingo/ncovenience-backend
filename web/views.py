@@ -13,7 +13,7 @@ def index(request):
     ph_hosp = functions.df_to_geojson(data.get_ph_hospitals())
     ph_geo = functions.df_to_geojson(data.get_ph_confirmed())
     context = {
-        'active_page': 'index',
+        'active_page': 'Dashboard',
         'age_plot': plot.get_plot_by_age(),
         'delta_counts': data.get_ph_numbers_delta(),
         'delta_plot': plot.get_delta_over_time(),
@@ -30,7 +30,10 @@ def index(request):
 
 
 def api_docs(request):
-    return render(request, 'web/api_docs.html.j2')
+    context = {
+        'active_page': 'API',
+    }
+    return render(request, 'web/api_docs.html.j2', context)
 
 
 def api_name(request):
