@@ -14,14 +14,14 @@ def index(request):
     ph_geo = functions.df_to_geojson(data.get_ph_confirmed())
     context = {
         'active_page': 'Dashboard',
-        'age_plot': plot.get_plot_by_age(),
+        # 'age_plot': plot.get_plot_by_age(),
         'delta_counts': data.get_ph_numbers_delta(),
         'delta_plot': plot.get_delta_over_time(),
         'hospitals': escapejs(ph_hosp),
         'last_updated': functions.check_last_updated(),
-        'nationality_cases': plot.get_plot_by_nationality(),
+        # 'nationality_cases': plot.get_plot_by_nationality(),
+        # 'ncr_cases': plot.get_metro_cases(),
         'numbers': data.get_ph_numbers(),
-        'ncr_cases': plot.get_metro_cases(),
         'ph_cases': escapejs(ph_geo),
         'time_plot': plot.get_plot_over_time(),
         'world_plot': plot.get_world_over_time(),

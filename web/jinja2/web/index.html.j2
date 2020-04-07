@@ -64,8 +64,8 @@
         {% for title, chart in charts %}
             <div class="mb-3 mx-0 px-0">
                 <div class="card">
-                    <div class="card-header text-uppercase text-muted">{{ title }}</div>
-                    <div class="card-body m-0">{{ chart }}</div>
+                    <div class="card-header text-uppercase text-muted">{{ title if title else 'No data available' }}</div>
+                    <div class="card-body m-0">{{ chart if chart else 'No data available' }}</div>
                 </div>
             </div>
         {% endfor %}
