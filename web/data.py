@@ -13,13 +13,16 @@ def get_ph_confirmed():
         ph_url = 'https://ncovph.com/api/confirmed-cases'
         ph_conf = pd.read_json(request.urlopen(ph_url))
         ph_conf = ph_conf.drop('date_confirmed', axis=1)
-        # regions = [v['region'] if v is not None else None for v in ph_conf['residence'].values]
-        # provinces = [v['province'] if v is not None else None for v in ph_conf['residence'].values]
-        # cities = [v['city'] if v is not None else None for v in ph_conf['residence'].values]
-        # ph_conf.insert(8, 'region', regions)
-        # ph_conf.insert(9, 'province', provinces)
-        # ph_conf.insert(10, 'city', cities)
-        # ph_conf = ph_conf.drop('residence', axis=1)
+        try:
+            regions = [v['region'] if v is not None else None for v in ph_conf['residence'].values]
+            provinces = [v['province'] if v is not None else None for v in ph_conf['residence'].values]
+            cities = [v['city'] if v is not None else None for v in ph_conf['residence'].values]
+            ph_conf.insert(8, 'region', regions)
+            ph_conf.insert(9, 'province', provinces)
+            ph_conf.insert(10, 'city', cities)
+            ph_conf = ph_conf.drop('residence', axis=1)
+        except IndexError:
+            pass
         cache.set('ph_conf', ph_conf.to_json())
     else:
         ph_conf = pd.read_json(ph_conf)

@@ -5,6 +5,7 @@ import plotly.graph_objs as go
 from datetime import datetime
 from plotly.offline import plot
 from . import data
+from django.conf import settings
 
 
 bs4_success = '#00c851'
@@ -165,18 +166,21 @@ def get_delta_over_time():
 
 
 def get_plot_by_age():
-    ph_conf = data.get_ph_confirmed()
-    valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For Verification'").index).astype('uint8')
-    recov_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index).query("status == 'Recovered'")
-    recov_by_age = recov_by_age['age'].drop(recov_by_age.query("age == 'For Verification'").index).astype('uint8')
-    recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(10, 101, 10))).count()
-    death_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index).query("status == 'Deceased'")
-    death_by_age = death_by_age['age'].drop(death_by_age.query("age == 'For Verification'").index).astype('uint8')
-    death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(10, 101, 10))).count()
-    conf_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index)
-    conf_by_age = conf_by_age['age'].drop(conf_by_age.query("age == 'For Verification'").index).astype('uint8')
-    conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(10, 101, 10))).count()
-    cases_by_age = conf_by_age.values - recov_by_age.values - death_by_age.values
+    try:
+        ph_conf = data.get_ph_confirmed()
+        valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For Verification'").index).astype('uint8')
+        recov_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index).query("status == 'Recovered'")
+        recov_by_age = recov_by_age['age'].drop(recov_by_age.query("age == 'For Verification'").index).astype('uint8')
+        recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(10, 101, 10))).count()
+        death_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index).query("status == 'Deceased'")
+        death_by_age = death_by_age['age'].drop(death_by_age.query("age == 'For Verification'").index).astype('uint8')
+        death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(10, 101, 10))).count()
+        conf_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index)
+        conf_by_age = conf_by_age['age'].drop(conf_by_age.query("age == 'For Verification'").index).astype('uint8')
+        conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(10, 101, 10))).count()
+        cases_by_age = conf_by_age.values - recov_by_age.values - death_by_age.values
+    except (IndexError, ValueError):
+        return settings.UNAVAILABLE_RESPONSE
 
     fig = go.Figure()
     fig.add_trace(
@@ -230,7 +234,10 @@ def get_plot_by_age():
 
 def get_metro_cases():
     ph_conf = data.get_ph_confirmed()
-    metro_conf = ph_conf.query("region == 'NCR'")
+    try:
+        metro_conf = ph_conf.query("region == 'NCR'")
+    except pd.core.computation.ops.UndefinedVariableError:
+        return settings.UNAVAILABLE_RESPONSE
     metro_city_recov = metro_conf.query("status == 'Recovered'").groupby('city').count()['caseID']
     metro_city_death = metro_conf.query("status == 'Deceased'").groupby('city').count()['caseID']
     metro_city_cases = metro_conf.query("status == 'Unspecified'").groupby('city').count()['caseID']
@@ -279,10 +286,13 @@ def get_metro_cases():
 
 def get_plot_by_nationality():
     ph_conf = data.get_ph_confirmed()
-    nationality = ph_conf['nationality'].value_counts()
-    nat = nationality.index.to_list()
-    nat[1] = 'For validation'
-    nationality.index = nat
+    try:
+        nationality = ph_conf['nationality'].value_counts()
+        nat = nationality.index.to_list()
+        nat[1] = 'For validation'
+        nationality.index = nat
+    except IndexError:
+        return settings.UNAVAILABLE_RESPONSE
 
     fig = go.Figure()
     fig.add_trace(go.Pie(

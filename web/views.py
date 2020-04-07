@@ -10,19 +10,17 @@ from django.utils.html import escapejs
 wake_time = time()
 
 def index(request):
-    ph_hosp = functions.df_to_geojson(data.get_ph_hospitals())
-    ph_geo = functions.df_to_geojson(data.get_ph_confirmed())
     context = {
         'active_page': 'Dashboard',
-        # 'age_plot': plot.get_plot_by_age(),
+        'age_plot': plot.get_plot_by_age(),
         'delta_counts': data.get_ph_numbers_delta(),
         'delta_plot': plot.get_delta_over_time(),
-        'hospitals': escapejs(ph_hosp),
+        'hospitals': escapejs(functions.df_to_geojson(data.get_ph_hospitals())),
         'last_updated': functions.check_last_updated(),
-        # 'nationality_cases': plot.get_plot_by_nationality(),
-        # 'ncr_cases': plot.get_metro_cases(),
+        'nationality_cases': plot.get_plot_by_nationality(),
+        'ncr_cases': plot.get_metro_cases(),
         'numbers': data.get_ph_numbers(),
-        'ph_cases': escapejs(ph_geo),
+        'ph_cases': escapejs(functions.df_to_geojson(data.get_ph_confirmed())),
         'time_plot': plot.get_plot_over_time(),
         'world_plot': plot.get_world_over_time(),
     }

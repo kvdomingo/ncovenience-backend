@@ -156,6 +156,8 @@ STATIC_URL = '/static/'
 
 set_mapbox_access_token(os.environ['MAPBOX_ACCESS_TOKEN'])
 
+UNAVAILABLE_RESPONSE = 'DOH data unavailable'
+
 ON_HEROKU = bool(int(os.environ['ON_HEROKU']))
 
 if ON_HEROKU:

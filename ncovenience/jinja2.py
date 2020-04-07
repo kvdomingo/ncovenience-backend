@@ -9,9 +9,9 @@ from datetime import datetime
 def environment(**options):
     env = Environment(**options)
     env.globals.update({
-        'static': static,
-        'url': reverse,
         'now': datetime.now(),
         'settings': settings,
+        'static': static,
+        'url': reverse,
     })
     return env
