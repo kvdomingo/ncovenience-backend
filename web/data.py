@@ -44,16 +44,16 @@ def get_ph_geoapi():
 def get_ph_numbers():
     numbers = cache.get('numbers')
     if numbers is None:
-        numbers_url = 'https://ncov-tracker-slexwwreja-de.a.run.app/numbers'
-        numbers = pd.read_json(request.urlopen(numbers_url))
-        cache.set('numbers', numbers.to_json())
-    else:
-        numbers = pd.read_json(numbers)
-    numbers_type = numbers['type'].to_list()
-    numbers_count = numbers['count'].to_list()
-    ph_numbers = dict(zip(numbers_type, numbers_count))
-    cache.set('confirmed', ph_numbers['confirmed'], timeout=60*15)
-    return ph_numbers
+        numbers_url = 'https://ncovph.com/api/counts'
+        numbers = pd.read_json(request.urlopen(numbers_url), orient='index')
+        numbers.rename(index={'deceased': 'deaths'}, inplace=True)
+        numbers_type = numbers[0].index.to_list()
+        numbers_count = numbers[0].fillna(0).astype(int).to_list()
+        ph_numbers = dict(zip(numbers_type, numbers_count))
+        cache.set('numbers', ph_numbers)
+        cache.set('confirmed', ph_numbers['confirmed'], timeout=60*15)
+        return ph_numbers
+    return numbers
 
 
 def get_ph_numbers_delta():

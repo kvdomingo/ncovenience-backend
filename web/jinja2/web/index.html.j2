@@ -18,8 +18,8 @@
             ('success', 'Recovered', numbers.recovered, delta_counts.recovered, 'first-aid'),
             ('danger', 'Deceased', numbers.deaths, delta_counts.deaths, 'skull-crossbones'),
             ('muted', 'Tests', numbers.tests, none, 'stethoscope'),
-            ('secondary', 'PUMs', numbers.PUMs, none, 'temperature-high'),
-            ('default', 'PUIs', numbers.PUIs, none, 'search'),
+            ('secondary', 'PUMs', numbers.pum, none, 'temperature-high'),
+            ('default', 'PUIs', numbers.pui, none, 'search'),
         ] %}
         <div class="row row-cols-2 row-cols-xl-3 mt-3">
             {% for color, header, num, delta, icon in panel_contents %}
