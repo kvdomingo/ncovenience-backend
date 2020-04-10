@@ -44,11 +44,27 @@ def get_ph_geoapi():
 def get_ph_numbers():
     numbers = cache.get('numbers')
     if numbers is None:
-        numbers_url = 'https://ncovph.com/api/counts'
-        numbers = pd.read_json(request.urlopen(numbers_url), orient='index')
-        numbers.rename(index={'deceased': 'deaths'}, inplace=True)
-        numbers_type = numbers[0].index.to_list()
-        numbers_count = numbers[0].fillna(0).astype(int).to_list()
+        # numbers_url = 'https://ncovph.com/api/counts'
+        # numbers = pd.read_json(request.urlopen(numbers_url), orient='index')
+        # numbers.rename(index={'deceased': 'deaths'}, inplace=True)
+        # numbers_type = ['numbers[0].index.to_list()']
+        # numbers_count = numbers[0].fillna(0).astype(int).to_list()
+        numbers_type = [
+            'confirmed',
+            'recovered',
+            'deaths',
+            'tests',
+            'pum',
+            'pui',
+        ]
+        ph_cases = [
+            get_confirmed_over_time(),
+            get_recovered_over_time(),
+            get_deaths_over_time(),
+        ]
+        ph_cases = [pc.query('`Country/Region` == "Philippines"') for pc in ph_cases]
+        numbers_count = [pc[pc.columns[-1]].values[0] for pc in ph_cases]
+        numbers_count.extend([0, 0, 0])
         ph_numbers = dict(zip(numbers_type, numbers_count))
         cache.set('numbers', ph_numbers)
         cache.set('confirmed', ph_numbers['confirmed'], timeout=60*15)
