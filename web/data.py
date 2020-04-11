@@ -2,8 +2,10 @@ import geojson
 import pandas as pd
 import numpy as np
 from urllib import request
+from urllib.error import HTTPError
 from datetime import datetime
 from django.core.cache import cache
+from django.conf import settings
 from . import functions
 
 
@@ -11,19 +13,22 @@ def get_ph_confirmed():
     ph_conf = cache.get('ph_conf')
     if ph_conf is None:
         ph_url = 'https://ncovph.com/api/confirmed-cases'
-        ph_conf = pd.read_json(request.urlopen(ph_url))
-        ph_conf = ph_conf.drop('date_confirmed', axis=1)
         try:
-            regions = [v['region'] if v is not None else None for v in ph_conf['residence'].values]
-            provinces = [v['province'] if v is not None else None for v in ph_conf['residence'].values]
-            cities = [v['city'] if v is not None else None for v in ph_conf['residence'].values]
-            ph_conf.insert(8, 'region', regions)
-            ph_conf.insert(9, 'province', provinces)
-            ph_conf.insert(10, 'city', cities)
-            ph_conf = ph_conf.drop('residence', axis=1)
-        except IndexError:
-            pass
-        cache.set('ph_conf', ph_conf.to_json())
+            ph_conf = pd.read_json(request.urlopen(ph_url))
+            try:
+                ph_conf = ph_conf.drop('date_confirmed', axis=1)
+                regions = [v['region'] if v is not None else None for v in ph_conf['residence'].values]
+                provinces = [v['province'] if v is not None else None for v in ph_conf['residence'].values]
+                cities = [v['city'] if v is not None else None for v in ph_conf['residence'].values]
+                ph_conf.insert(8, 'region', regions)
+                ph_conf.insert(9, 'province', provinces)
+                ph_conf.insert(10, 'city', cities)
+                ph_conf = ph_conf.drop('residence', axis=1)
+                cache.set('ph_conf', ph_conf.to_json())
+            except (IndexError, TypeError):
+                return settings.UNAVAILABLE_RESPONSE
+        except HTTPError:
+            return settings.UNAVAILABLE_RESPONSE
     else:
         ph_conf = pd.read_json(ph_conf)
     ph_conf = ph_conf.replace(np.nan, '')
@@ -103,7 +108,10 @@ def get_ph_hospitals():
     hospitals = cache.get('hospital')
     if hospitals is None:
         ph_conf = get_ph_confirmed()
-        hospitals = ph_conf['facility'].value_counts()
+        try:
+            hospitals = ph_conf['facility'].value_counts()
+        except TypeError:
+            return settings.UNAVAILABLE_RESPONSE
         coordinates = []
         for x in hospitals.index:
             if '"' in x:

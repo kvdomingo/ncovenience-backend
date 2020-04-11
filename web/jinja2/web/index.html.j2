@@ -13,9 +13,11 @@
     <div class="col-md-6 py-3" id="sideDash">
             <h1 class="display-4 mb-4 text-left display-inline">Dashboard</h1>&nbsp;
             <p class="text-muted display-inline">(updated {{ last_updated }})</p>
-            <p class="note note-info mt-3 mb-4">
-                <strong>Update 10 Apr 2020:</strong> Because the ArcGIS/DOH servers are currently down, the map and charts are stuck at the Apr 7 stats until further notice. The counters, and cumulative daily and world cases will continue to show updated stats as they are temporarily being sourced from Johns Hopkins CSSE.
-            </p>
+            <div class="mt-3 mb-4">
+                <p class="note note-warning">
+                    <strong>Update 11 Apr 2020:</strong> All ArcGIS/DOH data are unavailable at the moment, so the map and charts&mdash;which are dependent on them&mdash;are consequently unavailable. Counters and daily cases will continue to show updated data from CSSE.
+                </p>
+            </div>
         {% set panel_contents = [
             ('warning', 'Confirmed', numbers.confirmed, delta_counts.confirmed, 'users'),
             ('success', 'Recovered', numbers.recovered, delta_counts.recovered, 'first-aid'),

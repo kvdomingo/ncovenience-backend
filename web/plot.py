@@ -2,10 +2,11 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objs as go
+from . import data
 from datetime import datetime
 from plotly.offline import plot
-from . import data
 from django.conf import settings
+from pandas.core.computation.ops import UndefinedVariableError
 
 
 bs4_success = '#00c851'
@@ -179,7 +180,7 @@ def get_plot_by_age():
         conf_by_age = conf_by_age['age'].drop(conf_by_age.query("age == 'For Verification'").index).astype('uint8')
         conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(10, 101, 10))).count()
         cases_by_age = conf_by_age.values - recov_by_age.values - death_by_age.values
-    except (IndexError, ValueError):
+    except (IndexError, ValueError, TypeError, KeyError):
         return settings.UNAVAILABLE_RESPONSE
 
     fig = go.Figure()
@@ -233,10 +234,10 @@ def get_plot_by_age():
 
 
 def get_metro_cases():
-    ph_conf = data.get_ph_confirmed()
     try:
+        ph_conf = data.get_ph_confirmed()
         metro_conf = ph_conf.query("region == 'NCR'")
-    except pd.core.computation.ops.UndefinedVariableError:
+    except (UndefinedVariableError, AttributeError, KeyError):
         return settings.UNAVAILABLE_RESPONSE
     metro_city_recov = metro_conf.query("status == 'Recovered'").groupby('city').count()['caseID']
     metro_city_death = metro_conf.query("status == 'Deceased'").groupby('city').count()['caseID']
@@ -285,13 +286,13 @@ def get_metro_cases():
 
 
 def get_plot_by_nationality():
-    ph_conf = data.get_ph_confirmed()
     try:
+        ph_conf = data.get_ph_confirmed()
         nationality = ph_conf['nationality'].value_counts()
         nat = nationality.index.to_list()
         nat[1] = 'For validation'
         nationality.index = nat
-    except IndexError:
+    except (IndexError, TypeError, KeyError):
         return settings.UNAVAILABLE_RESPONSE
 
     fig = go.Figure()
