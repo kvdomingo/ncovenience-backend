@@ -1,6 +1,7 @@
 import json
 from . import data, plot, functions
 from time import time
+from pandas import DataFrame
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
@@ -10,17 +11,25 @@ from django.utils.html import escapejs
 wake_time = time()
 
 def index(request):
+    ph_cases = data.get_ph_confirmed()
+    hospitals = data.get_ph_hospitals()
+    if isinstance(ph_cases, DataFrame):
+        ph_cases = escapejs(functions.df_to_geojson(ph_cases))
+        hospitals = escapejs(functions.df_to_geojson(hospitals))
+    else:
+        ph_cases = None
+        hospitals = None
     context = {
         'active_page': 'Dashboard',
         'age_plot': plot.get_plot_by_age(),
         'delta_counts': data.get_ph_numbers_delta(),
         'delta_plot': plot.get_delta_over_time(),
-        # 'hospitals': escapejs(functions.df_to_geojson(data.get_ph_hospitals())),
+        'hospitals': hospitals,
         'last_updated': functions.check_last_updated(),
         'nationality_cases': plot.get_plot_by_nationality(),
         'ncr_cases': plot.get_metro_cases(),
         'numbers': data.get_ph_numbers(),
-        # 'ph_cases': escapejs(functions.df_to_geojson(data.get_ph_confirmed())),
+        'ph_cases': ph_cases,
         'time_plot': plot.get_plot_over_time(),
         'world_plot': plot.get_world_over_time(),
     }
