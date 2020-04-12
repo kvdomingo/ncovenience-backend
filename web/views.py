@@ -1,6 +1,9 @@
 import json
+import pytz
 from . import data, plot, functions
+from .models import *
 from time import time
+from datetime import datetime
 from pandas import DataFrame
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render
@@ -8,11 +11,19 @@ from django.conf import settings
 from django.utils.html import escapejs
 
 
+LOCAL_TZ = pytz.timezone('Asia/Manila')
 wake_time = time()
 
 def index(request):
     ph_cases = data.get_ph_confirmed()
     hospitals = data.get_ph_hospitals()
+    latest_announcement = Update.objects.order_by('-created').first()
+    latest_announcement.created = (
+        latest_announcement.created
+            .replace(tzinfo=pytz.utc)
+            .astimezone(LOCAL_TZ)
+            .strftime("%d %b %Y")
+        )
     if isinstance(ph_cases, DataFrame):
         ph_cases = escapejs(functions.df_to_geojson(ph_cases))
         hospitals = escapejs(functions.df_to_geojson(hospitals))
@@ -21,6 +32,7 @@ def index(request):
         hospitals = None
     context = {
         'active_page': 'Dashboard',
+        'announcement': latest_announcement,
         'age_plot': plot.get_plot_by_age(),
         'delta_counts': data.get_ph_numbers_delta(),
         'delta_plot': plot.get_delta_over_time(),

@@ -15,7 +15,7 @@
             <p class="text-muted display-inline">(updated {{ last_updated }})</p>
             <div class="mt-3 mb-4">
                 <p class="note note-warning">
-                    <strong>Update 12 Apr 2020:</strong> Because the ArcGIS/DOH servers are currently down, the map and charts are stuck at the Apr 7 stats until further notice. The counters, and cumulative daily and world cases will continue to show updated stats as they are temporarily being sourced from Johns Hopkins CSSE.
+                    <strong>Update {{ announcement.created }}:</strong> {{ announcement.body }}
                 </p>
             </div>
         {% set panel_contents = [
