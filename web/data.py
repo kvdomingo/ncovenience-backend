@@ -1,4 +1,3 @@
-import geojson
 import pandas as pd
 import numpy as np
 from urllib import request
@@ -12,21 +11,10 @@ from . import functions
 def get_ph_confirmed():
     ph_conf = cache.get('ph_conf')
     if ph_conf is None:
-        ph_url = 'https://ncovph.com/api/confirmed-cases'
+        ph_url = 'https://raw.githubusercontent.com/benhur07b/covid19ph-doh-data-dump/master/data/case-information.csv'
         try:
-            ph_conf = pd.read_json(request.urlopen(ph_url))
-            try:
-                ph_conf = ph_conf.drop('date_confirmed', axis=1)
-                regions = [v['region'] if v is not None else None for v in ph_conf['residence'].values]
-                provinces = [v['province'] if v is not None else None for v in ph_conf['residence'].values]
-                cities = [v['city'] if v is not None else None for v in ph_conf['residence'].values]
-                ph_conf.insert(8, 'region', regions)
-                ph_conf.insert(9, 'province', provinces)
-                ph_conf.insert(10, 'city', cities)
-                ph_conf = ph_conf.drop('residence', axis=1)
-                cache.set('ph_conf', ph_conf.to_json())
-            except (IndexError, TypeError):
-                return settings.UNAVAILABLE_RESPONSE
+            ph_conf = pd.read_csv(request.urlopen(ph_url))
+            cache.set('ph_conf', ph_conf.to_json())
         except HTTPError:
             return settings.UNAVAILABLE_RESPONSE
     else:
@@ -35,32 +23,14 @@ def get_ph_confirmed():
     return ph_conf
 
 
-def get_ph_geoapi():
-    ph_conf_geo = cache.get('ph_conf_geo')
-    if ph_conf_geo is None:
-        ph_conf_geo = functions.df_to_geojson(ph_conf)
-        cache.set('ph_conf_geo', ph_conf_geo)
-        ph_conf_geo = pd.read_json(ph_conf_geo)
-    else:
-        ph_conf_geo = pd.read_json(ph_conf_geo)
-    return ph_conf_geo
-
-
 def get_ph_numbers():
     numbers = cache.get('numbers')
     if numbers is None:
-        # numbers_url = 'https://ncovph.com/api/counts'
-        # numbers = pd.read_json(request.urlopen(numbers_url), orient='index')
-        # numbers.rename(index={'deceased': 'deaths'}, inplace=True)
-        # numbers_type = ['numbers[0].index.to_list()']
-        # numbers_count = numbers[0].fillna(0).astype(int).to_list()
         numbers_type = [
             'confirmed',
+            'active',
             'recovered',
             'deaths',
-            'tests',
-            'pum',
-            'pui',
         ]
         ph_cases = [
             get_confirmed_over_time(),
@@ -69,7 +39,7 @@ def get_ph_numbers():
         ]
         ph_cases = [pc.query('`Country/Region` == "Philippines"') for pc in ph_cases]
         numbers_count = [pc[pc.columns[-1]].values[0] for pc in ph_cases]
-        numbers_count.extend([0, 0, 0])
+        numbers_count.insert(1, numbers_count[0] - numbers_count[1] - numbers_count[2])
         ph_numbers = dict(zip(numbers_type, numbers_count))
         cache.set('numbers', ph_numbers)
         cache.set('confirmed', ph_numbers['confirmed'], timeout=60*15)
@@ -101,29 +71,9 @@ def get_ph_numbers_delta():
         if today_count == remote_count:
             remote_count = ph_time[time[-2]].values[0]
         delta.append(today_count - remote_count)
+    case_names.insert(1, 'active')
+    delta.insert(1, delta[0] - delta[1] - delta[2])
     return dict(zip(case_names, delta))
-
-
-def get_ph_hospitals():
-    hospitals = cache.get('hospital')
-    if hospitals is None:
-        ph_conf = get_ph_confirmed()
-        try:
-            hospitals = ph_conf['facility'].value_counts()
-        except TypeError:
-            return settings.UNAVAILABLE_RESPONSE
-        coordinates = []
-        for x in hospitals.index:
-            if '"' in x:
-                coordinates.append(ph_conf.query(f"facility == '{x}'")['coordinates'].values[0])
-            else:
-                coordinates.append(ph_conf.query(f'facility == "{x}"')['coordinates'].values[0])
-        hospitals = pd.DataFrame({'facility': hospitals.index, 'count': hospitals, 'coordinates': coordinates})
-        hospitals.index = range(len(hospitals))
-        cache.set('hospital', hospitals.to_json())
-    else:
-        hospitals = pd.read_json(hospitals)
-    return hospitals
 
 
 def get_confirmed_over_time():

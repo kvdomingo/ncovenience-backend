@@ -5,28 +5,21 @@
 <link rel="stylesheet" href="{{ static('web/css/index.css') }}" />
 <script src="{{ static('web/js/index.js') }}"></script>
 
+<div class="container my-4">
+    <h1 class="display-4 my-4 text-left d-inline">Dashboard</h1>
+    <p class="text-muted d-inline">(updated {{ last_updated }})</p>
+    <p class="note note-warning mt-3">
+        <strong>Update {{ announcement.created }}:</strong> {{ announcement.body }}
+    </p>
 
-<div class="row m-0 p-0">
-    <div class="col-md-6 m-0 p-0">
-        <div class="map" id="map"></div>
-    </div>
-    <div class="col-md-6 py-3" id="sideDash">
-            <h1 class="display-4 mb-4 text-left display-inline">Dashboard</h1>&nbsp;
-            <p class="text-muted display-inline">(updated {{ last_updated }})</p>
-            <div class="mt-3 mb-4">
-                <p class="note note-warning">
-                    <strong>Update {{ announcement.created }}:</strong> {{ announcement.body }}
-                </p>
-            </div>
+    <div class="text-center">
         {% set panel_contents = [
             ('warning', 'Confirmed', numbers.confirmed, delta_counts.confirmed, 'users'),
+            ('primary', 'Active', numbers.active, delta_counts.active, 'stethoscope'),
             ('success', 'Recovered', numbers.recovered, delta_counts.recovered, 'first-aid'),
             ('danger', 'Deceased', numbers.deaths, delta_counts.deaths, 'skull-crossbones'),
-            ('muted', 'Tests', numbers.tests, none, 'stethoscope'),
-            ('secondary', 'PUMs', numbers.pum, none, 'temperature-high'),
-            ('default', 'PUIs', numbers.pui, none, 'search'),
         ] %}
-        <div class="row row-cols-2 row-cols-xl-3 mt-3">
+        <div class="row row-cols-2 row-cols-md-4 mt-4 mb-2">
             {% for color, header, num, delta, icon in panel_contents %}
                 <div class="col mx-0 px-2">
                     <div class="card mb-3">
@@ -64,20 +57,16 @@
             ('Worldwide cases', world_plot),
             ('Cases by age group', age_plot),
             ('NCR cases', ncr_cases),
-            ('Cases by nationality', nationality_cases),
         ] %}
         {% for title, chart in charts %}
             <div class="mb-3 mx-0 px-0">
                 <div class="card">
-                    <div class="card-header text-uppercase text-muted">{{ title }}</div>
+                    <div class="card-header text-left text-uppercase text-muted">{{ title }}</div>
                     <div class="card-body m-0 {{ 'text-muted' if chart == settings.UNAVAILABLE_RESPONSE }}">{{ chart }}</div>
                 </div>
             </div>
         {% endfor %}
     </div>
-</div>
-
-<input id="f9063c359f30d308e94e90657d6242a1241e805e" value="{{ ph_cases }}" readonly type="hidden" />
-<input id="b873053d13b7722f97f722df3a9a913ad27ec4da" value="{{ hospitals }}" readonly type="hidden" />
+    </div>
 
 {% endblock %}

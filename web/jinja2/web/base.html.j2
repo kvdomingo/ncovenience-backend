@@ -50,7 +50,8 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="box-shadow: none;">
         <a class="navbar-brand cl" href="{{ url('index') }}">
-            COVID-19 PH Tracker
+            <span style="font-variant: small-caps;">ncovenience</span>
+            : COVID-19 PH Tracker
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false", aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -67,5 +68,21 @@
         </div>
     </nav>
     {% block body %}{% endblock %}
+
+    <footer class="page-footer font-small bg-dark text-light pt-5 text-center">
+        <div class="container-fluid text-center py-3">
+            <a href="{{ url('index') }}" class="d-block">
+                <img src="https://res.cloudinary.com/kdphotography-assets/image/upload/v1586798479/logo/logo-white.png" height="30" alt="KVD logo" />
+            </a>
+            <a href="mailto:hello@kvdomingo.xyz" class="d-block my-2">hello@kvdomingo.xyz</a><br />
+            <div class="my-1">
+                <h4 style="display: inline;"><a class="mx-2" href="https://linkedin.com/kvdomingo" target="_blank"><i class="fab fa-linkedin"></i></a></h4>
+                <h4 style="display: inline;"><a class="mx-2" href="https://github.com/kvdomingo" target="_blank"><i class="fab fa-github"></i></a></h4>
+            </div>
+        </div>
+        <div class="footer-copyright text-center py-4">
+            &copy; {{ now.year }} <a href="mailto:hello@kvdomingo.xyz">Kenneth V. Domingo</a>
+        </div>
+    </footer>
 </body>
 </html>

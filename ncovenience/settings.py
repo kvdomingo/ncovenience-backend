@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import pytz
 from jinja2 import DebugUndefined, Undefined
 from dotenv import load_dotenv
 from plotly.express import set_mapbox_access_token
@@ -141,6 +142,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Manila'
+
+LOCAL_TZ = pytz.timezone(TIME_ZONE)
 
 USE_I18N = True
 

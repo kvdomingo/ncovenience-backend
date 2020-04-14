@@ -78,43 +78,8 @@
     }
     </code></pre>
     <a class="btn btn-outline-default" href="{{ url('api', args=('cases',)) }}" target="_blank">Try it</a>
-    <hr />
-
-    <h2><code>GET</code> /hospitals</h2>
-    <p class="lead">Returns the number of cases per hospital/medical facility.</p>
-    <p>Example response:</p>
-    <pre class="bg-light"><code>
-        {
-            type: "FeatureCollection",
-            features: {[
-                {
-                    type: "Feature",
-                    geometry: {
-                        type: "Point",
-                        coordinates: [
-                            120.980991,
-                            14.615867,
-                            0
-                        ]
-                    }
-                    properties" {
-                        facility: "For validation",
-                        count: 1603,
-                        coordinates: [...]
-                    }
-                }
-            ]}
-        }
-    </code></pre>
-    <a class="btn btn-outline-default" href="{{ url('api', args=('hospitals',)) }}" target="_blank">Try it</a>
 
 </div>
-
-<footer class="page-footer font-small bg-dark text-light mt-5">
-    <div class="footer-copyright text-center py-3">
-        &copy; {{ now.year }} <a href="https://github.com/kvdomingo">Kenneth V. Domongo</a>
-    </div>
-</footer>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 

@@ -169,26 +169,21 @@ def get_delta_over_time():
 def get_plot_by_age():
     try:
         ph_conf = data.get_ph_confirmed()
-        valid_age = ph_conf['age'].drop(ph_conf.query("age == 'For Verification'").index).astype('uint8')
-        recov_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index).query("status == 'Recovered'")
-        recov_by_age = recov_by_age['age'].drop(recov_by_age.query("age == 'For Verification'").index).astype('uint8')
-        recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(10, 101, 10))).count()
-        death_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index).query("status == 'Deceased'")
-        death_by_age = death_by_age['age'].drop(death_by_age.query("age == 'For Verification'").index).astype('uint8')
-        death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(10, 101, 10))).count()
-        conf_by_age = ph_conf.drop(ph_conf.query("age == 'For Verification'").index)
-        conf_by_age = conf_by_age['age'].drop(conf_by_age.query("age == 'For Verification'").index).astype('uint8')
-        conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(10, 101, 10))).count()
-        cases_by_age = conf_by_age.values - recov_by_age.values - death_by_age.values
+        conf_by_age = ph_conf.query("`RemovalType` == ''")['Age']
+        conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(0, 101, 10))).count()
+        recov_by_age = ph_conf.query("`RemovalType` == 'Recovered'")['Age']
+        recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(0, 101, 10))).count()
+        death_by_age = ph_conf.query("`RemovalType` == 'Died'")['Age']
+        death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(0, 101, 10))).count()
     except (IndexError, ValueError, TypeError, KeyError):
         return settings.UNAVAILABLE_RESPONSE
 
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
-            x=cases_by_age,
+            x=conf_by_age.values,
             y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
-            text=cases_by_age,
+            text=conf_by_age,
             textposition='auto',
             name='Active',
             marker_color=bs4_warning,
@@ -235,13 +230,36 @@ def get_plot_by_age():
 
 def get_metro_cases():
     try:
-        ph_conf = data.get_ph_confirmed()
-        metro_conf = ph_conf.query("region == 'NCR'")
+        ph_cases = data.get_ph_confirmed()
     except (UndefinedVariableError, AttributeError, KeyError):
         return settings.UNAVAILABLE_RESPONSE
-    metro_city_recov = metro_conf.query("status == 'Recovered'").groupby('city').count()['caseID']
-    metro_city_death = metro_conf.query("status == 'Deceased'").groupby('city').count()['caseID']
-    metro_city_cases = metro_conf.query("status == 'Unspecified'").groupby('city').count()['caseID']
+
+    metro_city_cases = (
+        ph_cases
+            .query("`RegionRes` == 'NCR'")
+            .query("`RemovalType` == ''")
+            .groupby('ProvCityRes')
+            .count()
+            .rename(index={'': 'For validation'})
+    )['CaseCode']
+
+    metro_city_recov = (
+        ph_cases
+            .query("`RegionRes` == 'NCR'")
+            .query("`RemovalType` == 'Recovered'")
+            .groupby('ProvCityRes')
+            .count()
+            .rename(index={'': 'For validation'})
+    )['CaseCode']
+
+    metro_city_death = (
+        ph_cases
+            .query("`RegionRes` == 'NCR'")
+            .query("`RemovalType` == 'Died'")
+            .groupby('ProvCityRes')
+            .count()
+            .rename(index={'': 'For validation'})
+    )['CaseCode']
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
@@ -281,36 +299,5 @@ def get_metro_cases():
         },
         barmode='stack',
         legend_orientation='h',
-    )
-    return plot(fig, output_type='div', include_plotlyjs=False)
-
-
-def get_plot_by_nationality():
-    try:
-        ph_conf = data.get_ph_confirmed()
-        nationality = ph_conf['nationality'].value_counts()
-        nat = nationality.index.to_list()
-        nat[1] = 'For validation'
-        nationality.index = nat
-    except (IndexError, TypeError, KeyError):
-        return settings.UNAVAILABLE_RESPONSE
-
-    fig = go.Figure()
-    fig.add_trace(go.Pie(
-        labels=nationality.index,
-        values=nationality.values,
-    ))
-    fig.update_traces(
-        textinfo='value+label',
-        textposition='none',
-    )
-    fig.update_layout(
-        uniformtext_mode='hide',
-        margin={
-            't': 0,
-            'l': 0,
-            'r': 0,
-            'b': 0,
-        },
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
