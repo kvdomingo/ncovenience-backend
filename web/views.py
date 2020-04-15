@@ -61,7 +61,7 @@ def api(request, page):
             return JsonResponse(response)
         elif page == 'cases':
             ph_conf = data.get_ph_confirmed()
-            ph_json = ph_conf.to_dict()
+            ph_json = ph_conf.to_dict('index')
             return JsonResponse(ph_json)
         else:
             raise Http404()

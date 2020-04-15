@@ -13,7 +13,7 @@
         <b>Base URL: </b><a href="{{ url('api_name') }}" target="_blank">https://ncovenience.herokuapp.com/api</a>
     </p>
     <p class="lead">
-        <b>Format: </b>JSON/GeoJSON
+        <b>Format: </b>JSON
     </p>
     <hr />
 
@@ -44,37 +44,18 @@
     <p>Example response:</p>
     <pre class="bg-light"><code>
     {
-        type: "FeatureCollection",
-        features: {[
-            {
-                type: "Feature",
-                geometry: {
-                    type: "Point",
-                    coordinates: [
-                        120.980815,
-                        14.613754,
-                        0
-                    ]
-                }
-                properties" {
-                    caseID: "PH1",
-                    age: 38,
-                    sex: "Female",
-                    coordinates: [...],
-                    status: "Recovered",
-                    nationality: "Chinese",
-                    travel_history: [...],
-                    region: "",
-                    province: "",
-                    city: "",
-                    symptoms: [...],
-                    facility: "San Lazaro Hospital",
-                    date_deceased: "",
-                    date_recovered: "2020-03-15T00:00:00.000Z",
-                    metadata: [...]
-                }
-            }
-        ]}
+        CaseCode: "C100119",
+        Age: 30,
+        AgeGroup: "30 to 34",
+        Sex: "Male",
+        DateRepConf: "4/12/2020",
+        DateRecover: "",
+        DateDied: "",
+        RemovalType: "",
+        DateRepRem: "",
+        Admitted: "Yes",
+        RegionRes: "NCR",
+        ProvCityRes: "City of Parañaque"
     }
     </code></pre>
     <a class="btn btn-outline-default" href="{{ url('api', args=('cases',)) }}" target="_blank">Try it</a>
