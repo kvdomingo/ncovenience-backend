@@ -14,7 +14,7 @@ def get_ph_confirmed():
         ph_url = 'https://raw.githubusercontent.com/benhur07b/covid19ph-doh-data-dump/master/data/case-information.csv'
         try:
             ph_conf = pd.read_csv(request.urlopen(ph_url))
-            cache.set('ph_conf', ph_conf.to_json())
+            cache.set('ph_conf', ph_conf.to_json(), timeout=settings.DEFAULT_TIMEOUT)
         except HTTPError:
             return settings.UNAVAILABLE_RESPONSE
     else:

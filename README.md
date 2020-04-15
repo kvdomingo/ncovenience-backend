@@ -30,10 +30,3 @@
     ```
     > curl -X https://ncovenience.herokuapp.com/api/cases
     ```
-
-- `GET` /hospitals
-
-    Returns cases for hospitals/medical facilities.
-    ```
-    > curl -X https://ncovenience.herokuapp.com/api/hospitals
-    ```

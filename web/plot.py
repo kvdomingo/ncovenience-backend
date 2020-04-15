@@ -261,9 +261,13 @@ def get_metro_cases():
             .rename(index={'': 'For validation'})
     )['CaseCode']
 
+    city_names = [
+        c.split('City of ')[-1] if 'City of' in c else c for c in metro_city_cases.index
+    ]
+
     fig = go.Figure()
     fig.add_trace(go.Bar(
-        y=metro_city_cases.index,
+        y=city_names,
         x=metro_city_cases.values,
         text=metro_city_cases.values,
         textposition='auto',
@@ -272,7 +276,7 @@ def get_metro_cases():
         orientation='h',
     ))
     fig.add_trace(go.Bar(
-        y=metro_city_recov.index,
+        y=city_names,
         x=metro_city_recov.values,
         text=metro_city_recov.values,
         name='Recovered',
@@ -280,7 +284,7 @@ def get_metro_cases():
         orientation='h',
     ))
     fig.add_trace(go.Bar(
-        y=metro_city_death.index,
+        y=city_names,
         x=metro_city_death.values,
         text=metro_city_death.values,
         name='Deceased',
@@ -295,7 +299,7 @@ def get_metro_cases():
             'b': 0,
         },
         yaxis={
-          'categoryorder': 'category descending',
+          'categoryorder': 'total ascending',
         },
         barmode='stack',
         legend_orientation='h',
