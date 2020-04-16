@@ -18,24 +18,48 @@ def get_plot_over_time():
     time_recov_unique = data.get_recovered_over_time()
     time_dead_unique = data.get_deaths_over_time()
 
+    time_conf_keys = time_conf_unique.keys()[2:]
+    time_conf_vals = (
+        time_conf_unique
+            .query("`Country/Region` == 'Philippines'")[time_conf_unique.keys()[2:]]
+            .sum()
+            .values
+    )
+
+    time_recov_keys = time_recov_unique.keys()[2:]
+    time_recov_vals = (
+        time_recov_unique
+            .query("`Country/Region` == 'Philippines'")[time_conf_unique.keys()[2:]]
+            .sum()
+            .values
+    )
+
+    time_dead_keys = time_recov_unique.keys()[2:]
+    time_dead_vals = (
+        time_dead_unique
+            .query("`Country/Region` == 'Philippines'")[time_conf_unique.keys()[2:]]
+            .sum()
+            .values
+    )
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=time_conf_unique.keys()[2:],
-        y=time_conf_unique.query("`Country/Region` == 'Philippines'")[time_conf_unique.keys()[2:]].sum().values,
+        x=time_conf_keys,
+        y=time_conf_vals,
         name='Confirmed',
         marker_color=bs4_warning,
         mode='lines',
     ))
     fig.add_trace(go.Scatter(
-        x=time_recov_unique.keys()[2:],
-        y=time_recov_unique.query("`Country/Region` == 'Philippines'")[time_recov_unique.keys()[2:]].sum().values,
+        x=time_recov_keys,
+        y=time_recov_vals,
         name='Recovered',
         marker_color=bs4_success,
         mode='lines',
     ))
     fig.add_trace(go.Scatter(
-        x=time_dead_unique.keys()[2:],
-        y=time_dead_unique.query("`Country/Region` == 'Philippines'")[time_dead_unique.keys()[2:]].sum().values,
+        x=time_dead_keys,
+        y=time_dead_vals,
         name='Deceased',
         marker_color=bs4_danger,
         mode='lines',
@@ -53,6 +77,41 @@ def get_plot_over_time():
             'b': 0,
         },
         yaxis_title='cumulative number of cases',
+        annotations=[
+            dict(
+                x=datetime(2020, 1, 30),
+                y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 1, 30))],
+                xref='x',
+                yref='y',
+                text=f'First PH case | {datetime(2020, 1, 30).strftime("%d %b")}',
+                showarrow=True,
+                arrowhead=7,
+                ax=0,
+                ay=-100,
+            ),
+            dict(
+                x=datetime(2020, 3, 15),
+                y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 3, 15))],
+                xref='x',
+                yref='y',
+                text=f'Community Quarantine | {datetime(2020, 3, 15).strftime("%d %b")}',
+                showarrow=True,
+                arrowhead=7,
+                ax=-150,
+                ay=-50,
+            ),
+            dict(
+                x=datetime(2020, 3, 17),
+                y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 3, 17))],
+                xref='x',
+                yref='y',
+                text=f'Enhanced Community Quarantine | {datetime(2020, 3, 17).strftime("%d %b")}',
+                showarrow=True,
+                arrowhead=7,
+                ax=0,
+                ay=-100,
+            ),
+        ],
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
 
@@ -262,7 +321,10 @@ def get_metro_cases():
     )['CaseCode']
 
     city_names = [
-        c.split('City of ')[-1] if 'City of' in c else c for c in metro_city_cases.index
+        c.split('City of ')[-1]
+        if 'City of' in c
+        else c
+        for c in metro_city_cases.index
     ]
 
     fig = go.Figure()
