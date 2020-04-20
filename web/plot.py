@@ -300,7 +300,7 @@ def get_metro_cases():
             .groupby('ProvCityRes')
             .count()
             .rename(index={'': 'For validation'})
-    )['CaseNo']
+    )['CaseCode']
 
     metro_city_recov = (
         ph_cases
@@ -309,7 +309,7 @@ def get_metro_cases():
             .groupby('ProvCityRes')
             .count()
             .rename(index={'': 'For validation'})
-    )['CaseNo']
+    )['CaseCode']
 
     metro_city_death = (
         ph_cases
@@ -318,7 +318,7 @@ def get_metro_cases():
             .groupby('ProvCityRes')
             .count()
             .rename(index={'': 'For validation'})
-    )['CaseNo']
+    )['CaseCode']
 
     city_names = [
         c.split('City of ')[-1]
