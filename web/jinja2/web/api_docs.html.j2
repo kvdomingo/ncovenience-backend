@@ -44,18 +44,34 @@
     <p>Example response:</p>
     <pre class="bg-light"><code>
     {
-        CaseCode: "C100119",
-        Age: 30,
-        AgeGroup: "30 to 34",
-        Sex: "Male",
-        DateRepConf: "4/12/2020",
-        DateRecover: "",
-        DateDied: "",
-        RemovalType: "",
-        DateRepRem: "",
-        Admitted: "Yes",
-        RegionRes: "NCR",
-        ProvCityRes: "City of Parañaque"
+        type: "FeatureCollection",
+        separators : [...],
+        features: [
+            {
+                type: "Feature",
+                geometry: {
+                    type: "Point",
+                    coordinates: [
+                        121.019184,
+                        14.479309,
+                        0
+                    ]
+                },
+                properties: {
+                    case_no: "C100119",
+                    case_no_num: 100119,
+                    residence: "Paranaque City, Metro Manila",
+                    sex: "Male",
+                    status: "",
+                    confirmation_date: 1586649600000,
+                    age: 30,
+                    date: ""
+                }
+            },
+            {
+                ...
+            }
+        ]
     }
     </code></pre>
     <a class="btn btn-outline-default" href="{{ url('api', args=('cases',)) }}" target="_blank">Try it</a>

@@ -5,26 +5,24 @@ function parseEscapedJson(s) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    $("#map").first().css("height", window.innerHeight - $(".navbar").first().innerHeight());
-    $("#sideDash").first()
-        .css("overflow-y", "scroll")
-        .css("height", window.innerHeight - $(".navbar").first().innerHeight());
+    $('.count').each(function() {
+        $(this).prop('Counter', 0).animate({
+            Counter: $(this).text()
+        }, {
+            duration: 3000,
+            easing: 'swing',
+            step: function(now) {
+                $(this).text(Math.ceil(now));
+            }
+        });
+    });
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Zkb21pbmdvIiwiYSI6ImNrOGtiYnZ4aTAwM2EzZm8xOTdmMjU2bXQifQ.zXF6zxjKqz660if2tOcdDw';
 
-    cases = JSON.parse(
-        parseEscapedJson(
-            document.querySelector('#f9063c359f30d308e94e90657d6242a1241e805e')
-                .value
-        )
-    );
-
-    hospitals = JSON.parse(
-        parseEscapedJson(
-            document.querySelector('#b873053d13b7722f97f722df3a9a913ad27ec4da')
-                .value
-        )
-    );
+    request = axios.get('/api/cases')
+        .then(response => {
+            cases = response.data;
+        });
 
     request = axios.get('https://raw.githubusercontent.com/macoymejia/geojsonph/master/Province/Provinces.json')
         .then(response => {
@@ -39,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: [121, 12.5],
-        zoom: 5,
+        zoom: 4.5,
     });
 
     map.addControl(
@@ -74,14 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
         map.addSource('cases', {
             type: 'geojson',
             data: cases,
-            cluster: true,
-            clusterMaxZoom: 14,
-            clusterRadius: 50,
-        });
-
-        map.addSource('hospitals', {
-            type: 'geojson',
-            data: hospitals,
             cluster: true,
             clusterMaxZoom: 14,
             clusterRadius: 50,
@@ -144,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         map.addLayer({
             id: 'unclustered-point',
             type: 'circle',
-            source: 'hospitals',
+            source: 'cases',
             filter: ['!', ['has', 'point_count']],
             paint: {
                 'circle-color': '#11b4da',
@@ -226,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 layers: ['clusters'],
             });
             var clusterId = features[0].properties.cluster_id;
-            map.getSource('hospitals').getClusterExpansionZoom(
+            map.getSource('cases').getClusterExpansionZoom(
                 clusterId,
                 function(err, zoom) {
                     if (err) return;
@@ -244,8 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
             new mapboxgl.Popup()
                 .setLngLat(coordinates)
                 .setHTML(`
-                    facility: ${props.facility}<br />
-                    count: ${props.count}
+                    Location: ${props.residence}
                 `)
                 .addTo(map);
         });

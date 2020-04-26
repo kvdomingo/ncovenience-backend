@@ -44,6 +44,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'web.apps.WebConfig',
+    'phcovid.apps.PhcovidConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

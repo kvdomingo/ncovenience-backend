@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 from urllib import request
@@ -21,6 +22,12 @@ def get_ph_confirmed():
         ph_conf = pd.read_json(ph_conf)
     ph_conf = ph_conf.replace(np.nan, '')
     return ph_conf
+
+
+def get_phcovid():
+    with open(os.path.join(settings.BASE_DIR, 'web', 'static', 'web', 'data', 'latest.json'), 'r') as f:
+        df = pd.read_json(f, orient='index').replace(np.nan, '').replace('None', '')
+    return df
 
 
 def get_ph_numbers():

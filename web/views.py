@@ -15,15 +15,16 @@ wake_time = time()
 
 def index(request):
     latest_announcement = Update.objects.order_by('-created').first()
-    latest_announcement.created = (
-        latest_announcement.created
-            .replace(tzinfo=pytz.utc)
-            .astimezone(settings.LOCAL_TZ)
-            .strftime("%d %b %Y")
-    )
+    if latest_announcement:
+        latest_announcement.created = (
+            latest_announcement.created
+                .replace(tzinfo=pytz.utc)
+                .astimezone(settings.LOCAL_TZ)
+                .strftime("%d %b %Y")
+        )
     context = {
         'active_page': 'Dashboard',
-        'announcement': latest_announcement,
+        'announcement': latest_announcement if latest_announcement else None,
         'age_plot': plot.get_plot_by_age(),
         'delta_counts': data.get_ph_numbers_delta(),
         'delta_plot': plot.get_delta_over_time(),
@@ -60,8 +61,8 @@ def api(request, page):
             }
             return JsonResponse(response)
         elif page == 'cases':
-            ph_conf = data.get_ph_confirmed()
-            ph_json = ph_conf.to_dict('index')
+            ph_conf = functions.df_to_geojson(data.get_phcovid())
+            ph_json = json.loads(ph_conf)
             return JsonResponse(ph_json)
         else:
             raise Http404()

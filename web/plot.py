@@ -83,7 +83,7 @@ def get_plot_over_time():
                 y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 1, 30))],
                 xref='x',
                 yref='y',
-                text=f'First PH case | {datetime(2020, 1, 30).strftime("%d %b")}',
+                text=f'First PH case <br /> {datetime(2020, 1, 30).strftime("%d %b")}',
                 showarrow=True,
                 arrowhead=7,
                 ax=0,
@@ -94,7 +94,7 @@ def get_plot_over_time():
                 y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 3, 15))],
                 xref='x',
                 yref='y',
-                text=f'Community Quarantine | {datetime(2020, 3, 15).strftime("%d %b")}',
+                text=f'Community Quarantine <br /> {datetime(2020, 3, 15).strftime("%d %b")}',
                 showarrow=True,
                 arrowhead=7,
                 ax=-150,
@@ -105,11 +105,11 @@ def get_plot_over_time():
                 y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 3, 17))],
                 xref='x',
                 yref='y',
-                text=f'Enhanced Community Quarantine | {datetime(2020, 3, 17).strftime("%d %b")}',
+                text=f'Enhanced Community Quarantine <br /> {datetime(2020, 3, 17).strftime("%d %b")}',
                 showarrow=True,
                 arrowhead=7,
                 ax=0,
-                ay=-100,
+                ay=-150,
             ),
         ],
     )
@@ -226,16 +226,13 @@ def get_delta_over_time():
 
 
 def get_plot_by_age():
-    try:
-        ph_conf = data.get_ph_confirmed()
-        conf_by_age = ph_conf.query("`RemovalType` == ''")['Age']
-        conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(0, 101, 10))).count()
-        recov_by_age = ph_conf.query("`RemovalType` == 'Recovered'")['Age']
-        recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(0, 101, 10))).count()
-        death_by_age = ph_conf.query("`RemovalType` == 'Died'")['Age']
-        death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(0, 101, 10))).count()
-    except (IndexError, ValueError, TypeError, KeyError):
-        return settings.UNAVAILABLE_RESPONSE
+    ph_conf = data.get_phcovid()
+    conf_by_age = ph_conf.query("`status` == ''").age
+    conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(0, 101, 10))).count()
+    recov_by_age = ph_conf.query("`status` == 'Recovered'").age
+    recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(0, 101, 10))).count()
+    death_by_age = ph_conf.query("`status` == 'Died'").age
+    death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(0, 101, 10))).count()
 
     fig = go.Figure()
     fig.add_trace(
@@ -288,48 +285,77 @@ def get_plot_by_age():
 
 
 def get_metro_cases():
-    try:
-        ph_cases = data.get_ph_confirmed()
-    except (UndefinedVariableError, AttributeError, KeyError):
-        return settings.UNAVAILABLE_RESPONSE
+    ph_cases = data.get_phcovid()
 
     metro_city_cases = (
         ph_cases
-            .query("`RegionRes` == 'NCR'")
-            .query("`RemovalType` == ''")
-            .groupby('ProvCityRes')
-            .count()
-            .rename(index={'': 'For validation'})
-    )['CaseCode']
+            .query("`status` == ''")
+            .residence
+    )
+    metro_city_cases = (
+        metro_city_cases[
+            metro_city_cases
+                .str.contains('Metro Manila')
+        ]
+            .str.split(', ')
+            .str[0]
+    )
+    metro_city_cases = (
+        metro_city_cases[
+            metro_city_cases
+                .str.contains('City')
+        ]
+            .str.title()
+            .value_counts()
+    )
 
     metro_city_recov = (
         ph_cases
-            .query("`RegionRes` == 'NCR'")
-            .query("`RemovalType` == 'Recovered'")
-            .groupby('ProvCityRes')
-            .count()
-            .rename(index={'': 'For validation'})
-    )['CaseCode']
+            .query("`status` == 'Recovered'")
+            .residence
+    )
+    metro_city_recov = (
+        metro_city_recov[
+            metro_city_recov
+                .str.contains('Metro Manila')
+        ]
+            .str.split(', ')
+            .str[0]
+    )
+    metro_city_recov = (
+        metro_city_recov[
+            metro_city_recov
+                .str.contains('City')
+        ]
+            .str.title()
+            .value_counts()
+    )
 
     metro_city_death = (
         ph_cases
-            .query("`RegionRes` == 'NCR'")
-            .query("`RemovalType` == 'Died'")
-            .groupby('ProvCityRes')
-            .count()
-            .rename(index={'': 'For validation'})
-    )['CaseCode']
-
-    city_names = [
-        c.split('City of ')[-1]
-        if 'City of' in c
-        else c
-        for c in metro_city_cases.index
-    ]
+            .query("`status` == 'Died'")
+            .residence
+    )
+    metro_city_death = (
+        metro_city_death[
+            metro_city_death
+                .str.contains('Metro Manila')
+        ]
+            .str.split(', ')
+            .str[0]
+    )
+    metro_city_death = (
+        metro_city_death[
+            metro_city_death
+                .str.contains('City')
+        ]
+            .str.title()
+            .value_counts()
+    )
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
-        y=city_names,
+        y=metro_city_cases.index,
         x=metro_city_cases.values,
         text=metro_city_cases.values,
         textposition='auto',
@@ -338,7 +364,7 @@ def get_metro_cases():
         orientation='h',
     ))
     fig.add_trace(go.Bar(
-        y=city_names,
+        y=metro_city_recov.index,
         x=metro_city_recov.values,
         text=metro_city_recov.values,
         name='Recovered',
@@ -346,7 +372,7 @@ def get_metro_cases():
         orientation='h',
     ))
     fig.add_trace(go.Bar(
-        y=city_names,
+        y=metro_city_death.index,
         x=metro_city_death.values,
         text=metro_city_death.values,
         name='Deceased',
