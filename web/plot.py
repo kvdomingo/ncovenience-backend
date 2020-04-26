@@ -198,7 +198,7 @@ def get_delta_over_time():
         name='Deaths',
         marker_color=bs4_danger,
         mode='lines',
-        text=list(map(lambda x: str(x) + ' new deaths', delta_recov)),
+        text=list(map(lambda x: str(x) + ' new deaths', delta_dead)),
     ))
     fig.add_trace(go.Scatter(
         x=recov_time,
@@ -206,7 +206,7 @@ def get_delta_over_time():
         name='Recovered',
         marker_color=bs4_success,
         mode='lines',
-        text=list(map(lambda x: str(x) + ' new recoveries', delta_dead)),
+        text=list(map(lambda x: str(x) + ' new recoveries', delta_recov)),
     ))
     fig.update_layout(
         legend={
