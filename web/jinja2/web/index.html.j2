@@ -33,7 +33,7 @@
                     {% for color, header, num, delta, icon in panel_contents %}
                         <div class="col mx-0 px-2">
                             <div class="card mb-3">
-                                <div class="card-header text-muted text-left text-uppercase">
+                                <div class="card-header text-muted text-left" style="font-variant: small-caps;">
                                     <i class="fas fa-{{ icon }}"></i>&nbsp;{{ header }}
                                 </div>
                                 <div class="card-body text-center text-{{ 'muted' if num == 0 else color }}">

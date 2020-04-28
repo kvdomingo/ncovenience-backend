@@ -353,28 +353,39 @@ def get_metro_cases():
             .value_counts()
     )
 
+    metro_pop = pd.Series(
+        data=[2936116, 665822, 582602, 386276, 755300, 804915, 1583978, 122180, 416522, 588894, 504509, 450741, 1780148, 620422, 365525, 249463],
+        index=metro_city_cases.index
+    )
+
+    metro_conf_norm = np.round(metro_city_cases/metro_pop * 100000)
+    metro_recov_norm = np.round(metro_city_recov/metro_pop * 100000)
+    metro_dead_norm = np.round(metro_city_death/metro_pop * 100000)
+
     fig = go.Figure()
     fig.add_trace(go.Bar(
-        y=metro_city_cases.index,
-        x=metro_city_cases.values,
-        text=metro_city_cases.values,
-        textposition='auto',
+        y=metro_conf_norm.index,
+        x=metro_conf_norm.values,
+        text=metro_city_cases,
+        hovertemplate='%{x} cases per 100,000 <br />%{text} total cases',
         name='Active',
         marker_color=bs4_warning,
         orientation='h',
     ))
     fig.add_trace(go.Bar(
-        y=metro_city_recov.index,
-        x=metro_city_recov.values,
-        text=metro_city_recov.values,
+        y=metro_recov_norm.index,
+        x=metro_recov_norm.values,
+        text=metro_city_recov,
+        hovertemplate='%{x} cases per 100,000 <br />%{text} total cases',
         name='Recovered',
         marker_color=bs4_success,
         orientation='h',
     ))
     fig.add_trace(go.Bar(
-        y=metro_city_death.index,
-        x=metro_city_death.values,
-        text=metro_city_death.values,
+        y=metro_dead_norm.index,
+        x=metro_dead_norm.values,
+        text=metro_city_death,
+        hovertemplate='%{x} cases per 100,000 <br />%{text} total cases',
         name='Deceased',
         marker_color=bs4_danger,
         orientation='h',
@@ -391,5 +402,8 @@ def get_metro_cases():
         },
         barmode='stack',
         legend_orientation='h',
+        xaxis=dict(
+            title='cases per 100,000 population'
+        ),
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
