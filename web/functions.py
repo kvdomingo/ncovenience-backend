@@ -27,21 +27,27 @@ def df_to_geojson(df, **kwargs):
         try:
             features.append(geojson.Feature(
                 geometry=geojson.Point((
-                    row['coordinates']['lng'],
-                    row['coordinates']['lat'],
-                    0,
+                    float(row['coordinates']['lng']),
+                    float(row['coordinates']['lat']),
+                    0.0,
                 )),
                 properties=row.to_dict(),
             ))
         except KeyError:
-            features.append(geojson.Feature(
-                geometry=geojson.Point((
-                    row['longitude'],
-                    row['latitude'],
-                    0,
-                )),
-                properties=row.to_dict(),
-            ))
+            try:
+                features.append(geojson.Feature(
+                    geometry=geojson.Point((
+                        float(row['longitude']),
+                        float(row['latitude']),
+                        0.0,
+                    )),
+                    properties=row.to_dict(),
+                ))
+            except ValueError:
+                features.append(geojson.Feature(
+                    geometry=None,
+                    properties=row.to_dict(),
+                ))
     df.apply(insert_features, axis=1)
     return geojson.dumps(geojson.FeatureCollection(features, separators=(',', ':')), **kwargs)
 

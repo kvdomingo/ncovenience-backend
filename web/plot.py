@@ -279,7 +279,13 @@ def get_plot_by_age():
         yaxis={
           'categoryorder': 'category descending',
         },
-        legend_orientation='h',
+        legend=dict(
+            orientation='h',
+            xanchor='right',
+            yanchor='bottom',
+            x=1,
+            y=0,
+        ),
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
 
@@ -353,9 +359,28 @@ def get_metro_cases():
             .value_counts()
     )
 
+    metro_pop_2015 = {
+        'Manila City': 1780148,
+        'Mandaluyong City': 386276,
+        'Marikina City': 450741,
+        'Pasig City': 755300,
+        'Quezon City': 2936116,
+        'San Juan City': 122180,
+        'Caloocan City': 1583978,
+        'Malabon City': 365525,
+        'Navotas City': 249463,
+        'Valenzuela City': 620422,
+        'Las Piñas City': 588894,
+        'Makati City': 582602,
+        'Muntinlupa City': 504509,
+        'Parañaque City': 665822,
+        'Pasay City': 416522,
+        'Taguig City': 804915,
+    }
+
     metro_pop = pd.Series(
-        data=[2936116, 665822, 582602, 386276, 755300, 804915, 1583978, 122180, 416522, 588894, 504509, 450741, 1780148, 620422, 365525, 249463],
-        index=metro_city_cases.index
+        data=list(metro_pop_2015.values()),
+        index=list(metro_pop_2015.keys())
     )
 
     metro_conf_norm = np.round(metro_city_cases/metro_pop * 100000)
@@ -401,7 +426,13 @@ def get_metro_cases():
           'categoryorder': 'total ascending',
         },
         barmode='stack',
-        legend_orientation='h',
+        legend=dict(
+            orientation='h',
+            xanchor='right',
+            yanchor='bottom',
+            x=1,
+            y=0,
+        ),
         xaxis=dict(
             title='cases per 100,000 population'
         ),
