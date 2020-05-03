@@ -227,20 +227,58 @@ def get_delta_over_time():
 
 def get_plot_by_age():
     ph_conf = data.get_phcovid()
+    categories = ['', 'Recovered', 'Died']
     conf_by_age = ph_conf.query("`status` == ''").age
-    conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(0, 101, 10))).count()
+    conf_by_age = conf_by_age.groupby(pd.cut(conf_by_age, np.arange(0, 86, 5), right=False)).count()
+    conf_by_age.index = conf_by_age.index.to_native_types()
     recov_by_age = ph_conf.query("`status` == 'Recovered'").age
-    recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(0, 101, 10))).count()
+    recov_by_age = recov_by_age.groupby(pd.cut(recov_by_age, np.arange(0, 86, 5), right=False)).count()
+    recov_by_age.index = recov_by_age.index.to_native_types()
     death_by_age = ph_conf.query("`status` == 'Died'").age
-    death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(0, 101, 10))).count()
+    death_by_age = death_by_age.groupby(pd.cut(death_by_age, np.arange(0, 86, 5), right=False)).count()
+    death_by_age.index = death_by_age.index.to_native_types()
+
+    total_age_2010 = {
+        "[0, 5)": 1166028,
+        "[5, 10)": 1136020,
+        "[10, 15)": 1113945,
+        "[15, 20)": 1155098,
+        "[20, 25)": 1203514,
+        "[25, 30)": 1159327,
+        "[30, 35)": 1026428,
+        "[35, 40)": 852455,
+        "[40, 45)": 752861,
+        "[45, 50)": 634135,
+        "[50, 55)": 527312,
+        "[55, 60)": 386578,
+        "[60, 65)": 279192,
+        "[65, 70)": 154754,
+        "[70, 75)": 113229,
+        "[75, 80)": 68749,
+        "[80, 85)": 62203,
+    }
+    total_age_2010 = pd.Series(
+        index=list(total_age_2010.keys()),
+        data=list(total_age_2010.values())
+    )
+
+    conf_age_norm = (np.round(conf_by_age/total_age_2010 * 100000)
+        .rename(lambda x: '-'.join(x.strip('[').strip(')').split(', ')))
+        .rename(index={'80-85': '80+'}))
+    recov_age_norm = (np.round(recov_by_age/total_age_2010 * 100000)
+        .rename(lambda x: '-'.join(x.strip('[').strip(')').split(', ')))
+        .rename(index={'80-85': '80+'}))
+    death_age_norm = (np.round(death_by_age/total_age_2010 * 100000)
+        .rename(lambda x: '-'.join(x.strip('[').strip(')').split(', ')))
+        .rename(index={'80-85': '80+'}))
 
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
-            x=conf_by_age.values,
-            y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
+            x=conf_age_norm.values,
+            y=conf_age_norm.index,
             text=conf_by_age,
-            textposition='auto',
+            hovertemplate='%{x} cases per 100,000 <br />%{text} total cases',
             name='Active',
             marker_color=bs4_warning,
             orientation='h',
@@ -248,9 +286,10 @@ def get_plot_by_age():
     )
     fig.add_trace(
         go.Bar(
-            x=recov_by_age.values,
-            y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
-            text=recov_by_age.values,
+            x=recov_age_norm.values,
+            y=recov_age_norm.index,
+            text=recov_by_age,
+            hovertemplate='%{x} cases per 100,000 <br />%{text} total cases',
             name='Recovered',
             marker_color=bs4_success,
             orientation='h',
@@ -258,9 +297,10 @@ def get_plot_by_age():
     )
     fig.add_trace(
         go.Bar(
-            x=death_by_age.values,
-            y=list(map(lambda x: str(x.left + 1) + '-' + str(x.right), conf_by_age.index.values)),
-            text=death_by_age.values,
+            x=death_age_norm.values,
+            y=death_age_norm.index,
+            text=death_by_age,
+            hovertemplate='%{x} cases per 100,000 <br />%{text} total cases',
             name='Deceased',
             marker_color=bs4_danger,
             orientation='h',
@@ -269,16 +309,16 @@ def get_plot_by_age():
     fig.update_layout(
         barmode='stack',
         yaxis_title='age group',
-        xaxis_title='number of cases',
+        xaxis_title='cases per 100,000 population',
         margin={
             't': 30,
             'l': 0,
             'r': 30,
             'b': 0,
         },
-        yaxis={
-          'categoryorder': 'category descending',
-        },
+        # yaxis={
+        #   'categoryorder': 'category descending',
+        # },
         legend=dict(
             orientation='h',
             xanchor='right',
