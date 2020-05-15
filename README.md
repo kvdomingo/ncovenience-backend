@@ -14,19 +14,19 @@
 
     Returns the name of the API.
     ```
-    > curl -X https://ncovenience.herokuapp.com/api
+    > curl -X GET https://ncovenience.herokuapp.com/api
     ```
 
 - `GET` /health
 
     Check the health/uptime of the API.
     ```
-    > curl -X https://ncovenience.herokuapp.com/api/health
+    > curl -X GET https://ncovenience.herokuapp.com/api/health
     ```
 
 - `GET` /cases
 
     Returns data for all PH cases.
     ```
-    > curl -X https://ncovenience.herokuapp.com/api/cases
+    > curl -X GET https://ncovenience.herokuapp.com/api/cases
     ```
