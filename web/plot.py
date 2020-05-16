@@ -77,41 +77,6 @@ def get_plot_over_time():
             'b': 0,
         },
         yaxis_title='cumulative number of cases',
-        annotations=[
-            dict(
-                x=datetime(2020, 1, 30),
-                y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 1, 30))],
-                xref='x',
-                yref='y',
-                text=f'First PH case <br /> {datetime(2020, 1, 30).strftime("%d %b")}',
-                showarrow=True,
-                arrowhead=7,
-                ax=0,
-                ay=-100,
-            ),
-            dict(
-                x=datetime(2020, 3, 15),
-                y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 3, 15))],
-                xref='x',
-                yref='y',
-                text=f'Community Quarantine <br /> {datetime(2020, 3, 15).strftime("%d %b")}',
-                showarrow=True,
-                arrowhead=7,
-                ax=-150,
-                ay=-50,
-            ),
-            dict(
-                x=datetime(2020, 3, 17),
-                y=time_conf_vals[time_conf_keys.to_list().index(datetime(2020, 3, 17))],
-                xref='x',
-                yref='y',
-                text=f'Enhanced Community Quarantine <br /> {datetime(2020, 3, 17).strftime("%d %b")}',
-                showarrow=True,
-                arrowhead=7,
-                ax=0,
-                ay=-150,
-            ),
-        ],
     )
     return plot(fig, output_type='div', include_plotlyjs=False)
 
@@ -341,18 +306,12 @@ def get_metro_cases():
     metro_city_cases = (
         metro_city_cases[
             metro_city_cases
-                .str.contains('Metro Manila')
+                .str.contains('METRO MANILA')
         ]
             .str.split(', ')
             .str[0]
-    )
-    metro_city_cases = (
-        metro_city_cases[
-            metro_city_cases
-                .str.contains('City')
-        ]
-            .str.title()
             .value_counts()
+            .drop('METRO MANILA')
     )
 
     metro_city_recov = (
@@ -363,18 +322,12 @@ def get_metro_cases():
     metro_city_recov = (
         metro_city_recov[
             metro_city_recov
-                .str.contains('Metro Manila')
+                .str.contains('METRO MANILA')
         ]
             .str.split(', ')
             .str[0]
-    )
-    metro_city_recov = (
-        metro_city_recov[
-            metro_city_recov
-                .str.contains('City')
-        ]
-            .str.title()
             .value_counts()
+            .drop('METRO MANILA')
     )
 
     metro_city_death = (
@@ -385,18 +338,12 @@ def get_metro_cases():
     metro_city_death = (
         metro_city_death[
             metro_city_death
-                .str.contains('Metro Manila')
+                .str.contains('METRO MANILA')
         ]
             .str.split(', ')
             .str[0]
-    )
-    metro_city_death = (
-        metro_city_death[
-            metro_city_death
-                .str.contains('City')
-        ]
-            .str.title()
             .value_counts()
+            .drop('METRO MANILA')
     )
 
     metro_pop_2015 = {
@@ -415,6 +362,7 @@ def get_metro_cases():
         'Muntinlupa City': 504509,
         'Parañaque City': 665822,
         'Pasay City': 416522,
+        'Pateros': 63840,
         'Taguig City': 804915,
     }
 

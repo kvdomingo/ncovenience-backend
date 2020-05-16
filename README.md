@@ -6,7 +6,7 @@
 
 **Base URL**: https://ncovenience.herokuapp.com/api
 
-**Format**: JSON
+**Format**: JSON/GeoJSON
 
 
 
