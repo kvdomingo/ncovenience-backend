@@ -306,12 +306,12 @@ def get_metro_cases():
     metro_city_cases = (
         metro_city_cases[
             metro_city_cases
-                .str.contains('METRO MANILA')
+                .str.contains('Metro Manila')
         ]
             .str.split(', ')
             .str[0]
             .value_counts()
-            .drop('METRO MANILA')
+            .drop('Metro Manila')
     )
 
     metro_city_recov = (
@@ -322,12 +322,12 @@ def get_metro_cases():
     metro_city_recov = (
         metro_city_recov[
             metro_city_recov
-                .str.contains('METRO MANILA')
+                .str.contains('Metro Manila')
         ]
             .str.split(', ')
             .str[0]
             .value_counts()
-            .drop('METRO MANILA')
+            .drop('Metro Manila')
     )
 
     metro_city_death = (
@@ -338,12 +338,12 @@ def get_metro_cases():
     metro_city_death = (
         metro_city_death[
             metro_city_death
-                .str.contains('METRO MANILA')
+                .str.contains('Metro Manila')
         ]
             .str.split(', ')
             .str[0]
             .value_counts()
-            .drop('METRO MANILA')
+            .drop('Metro Manila')
     )
 
     metro_pop_2015 = {

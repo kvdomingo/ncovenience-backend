@@ -1,4 +1,12 @@
-import os
+import os, sys
+sys.path.append('.')
+
+from dotenv import load_dotenv
+load_dotenv()
+
+import django
+django.setup()
+
 from time import time
 from pandas import NaT
 from numpy import nan as NaN
@@ -7,6 +15,7 @@ from phcovid.phcovid import get_cases
 
 
 def main():
+    print('Getting latest COVID-19PH data...')
     t0 = time()
     df = get_cases().replace(NaN, '').replace(NaT, '').replace('None', '')
     t1 = time()
