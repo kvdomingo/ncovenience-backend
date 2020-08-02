@@ -17,7 +17,15 @@ export default class CounterPanels extends React.Component {
     componentDidMount() {
         fetch('/api/time-plot')
             .then(res => res.json())
-            .then(timeCumulative => this.setState({ timeCumulative, loading: false }));
+            .then(res => {
+                let timeCumulative = res.plot;
+                let script = /<script(.*)>(.+)<\/script>/gi.exec(timeCumulative);
+                console.log(script);
+                timeCumulative = (script) ? timeCumulative.replace(script[0], "") : null;
+                this.setState({ timeCumulative, loading: false });
+                // eslint-disable-next-line
+                if (script) window.eval(script[1]);
+            });
     }
 
     render() {
@@ -29,7 +37,7 @@ export default class CounterPanels extends React.Component {
                         Cumulative daily cases
                     </CardHeader>
                     <CardBody className='m-0'>
-                        {HtmlParser(this.state.timeCumulative.plot)}
+                        {HtmlParser(this.state.timeCumulative)}
                     </CardBody>
                 </Card>
             </div>

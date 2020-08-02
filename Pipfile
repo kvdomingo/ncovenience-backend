@@ -1,0 +1,28 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipython = "*"
+
+[packages]
+django = "*"
+django-heroku = "*"
+django-webpack-loader = "*"
+geojson = "*"
+gunicorn = "*"
+jinja2 = "*"
+matplotlib = "*"
+numpy = "*"
+pandas = "*"
+phcovid = "*"
+plotly = "*"
+psycopg2 = "*"
+pyqt5 = "*"
+python-dotenv = "*"
+pytz = "*"
+requests = "*"
+
+[requires]
+python_version = "3.8"

@@ -1,0 +1,9 @@
+.map-container {
+    position: sticky;
+    top: 20px;
+}
+
+.map {
+    height: 576px;
+    width: 100%;
+}

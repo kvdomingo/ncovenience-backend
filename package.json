@@ -26,7 +26,7 @@
     "homepage": "https://ncovenience.herokuapp.com",
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.13.0",
-        "@mapbox/mapbox-gl-geocoder": "^4.5.1",
+        "@mapbox/mapbox-gl-geocoder": "^4.6.0",
         "bootstrap-css-only": "^4.4.1",
         "cloudinary-react": "^1.6.0",
         "dateformat": "^3.0.3",
