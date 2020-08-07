@@ -233,7 +233,7 @@ export default class Map extends React.Component {
 
     render() {
         return (
-            <div className='map-container'>
+            <div className='map-container mb-5'>
                 <Card className='mb-3 m-5'>
                     <CardHeader className='text-muted text-left text-uppercase'>Cases Map</CardHeader>
                     <CardBody className='p-0'>

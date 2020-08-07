@@ -32,3 +32,15 @@ def delta_plot(request):
     if request.method == 'GET':
         datasets = serialize.get_delta_over_time()
         return JsonResponse(dict(datasets=datasets))
+
+
+def world_plot(request):
+    if request.method == 'GET':
+        datasets = serialize.get_world_over_time()
+        return JsonResponse(dict(datasets=datasets))
+
+
+def age_plot(request):
+    if request.method == 'GET':
+        datasets = serialize.get_plot_by_age()
+        return JsonResponse(dict(datasets=datasets))
