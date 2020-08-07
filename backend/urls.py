@@ -7,4 +7,5 @@ urlpatterns = [
     path('numbers', views.numbers),
     path('counts', views.delta_counts),
     path('time-plot', views.time_plot),
+    path('delta-plot', views.delta_plot),
 ]
