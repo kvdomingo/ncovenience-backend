@@ -238,5 +238,6 @@ dist
 # TernJS port file
 .tern-port
 
-bundles/
+**/bundles/**
 webpack-stats.json
+.idea/
