@@ -10,4 +10,5 @@ urlpatterns = [
     path('delta-plot', views.delta_plot),
     path('world-plot', views.world_plot),
     path('age-plot', views.age_plot),
+    path('metro-plot', views.metro_plot),
 ]

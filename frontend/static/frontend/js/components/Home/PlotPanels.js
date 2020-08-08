@@ -27,6 +27,11 @@ export default function PlotPanels() {
                 xLabel='cases per 100,000 population'
                 yLabel='age group'
             />
+            <CasesBarPlot
+                endpoint='metro-plot'
+                cardTitle='NCR cases'
+                xLabel='cases per 100,000 population'
+            />
         </React.Fragment>
     );
 }

@@ -1,9 +1,9 @@
-from numpy import arange, diff, round
+from numpy import arange, diff, round, nan
 from pandas import cut, Series
 from web.data import get_confirmed_over_time,\
-    get_recovered_over_time,\
-    get_deaths_over_time, \
-    get_phcovid
+                     get_recovered_over_time,\
+                     get_deaths_over_time,\
+                     get_phcovid
 
 
 bs4_success = '#00c851'
@@ -205,6 +205,109 @@ def get_plot_by_age():
             dict(
                 label="Deceased",
                 data=[int(v) for v in death_age_norm.values],
+                backgroundColor=bs4_danger,
+            ),
+        ]
+    )
+    return data
+
+
+def get_metro_cases():
+    ph_cases = get_phcovid()
+
+    metro_city_cases = (
+        ph_cases
+            .query("`status` == ''")
+            .residence
+    )
+    metro_city_cases = (
+        metro_city_cases[
+            metro_city_cases
+                .str.contains('Metro Manila')
+        ]
+            .str.split(', ')
+            .str[0]
+            .value_counts()
+            .drop('Metro Manila')
+    )
+
+    metro_city_recov = (
+        ph_cases
+            .query("`status` == 'Recovered'")
+            .residence
+    )
+    metro_city_recov = (
+        metro_city_recov[
+            metro_city_recov
+                .str.contains('Metro Manila')
+        ]
+            .str.split(', ')
+            .str[0]
+            .value_counts()
+            .drop('Metro Manila')
+    )
+
+    metro_city_death = (
+        ph_cases
+            .query("`status` == 'Died'")
+            .residence
+    )
+    metro_city_death = (
+        metro_city_death[
+            metro_city_death
+                .str.contains('Metro Manila')
+        ]
+            .str.split(', ')
+            .str[0]
+            .value_counts()
+            .drop('Metro Manila')
+    )
+
+    metro_pop_2015 = {
+        'Manila City': 1780148,
+        'Mandaluyong City': 386276,
+        'Marikina City': 450741,
+        'Pasig City': 755300,
+        'Quezon City': 2936116,
+        'San Juan City': 122180,
+        'Caloocan City': 1583978,
+        'Malabon City': 365525,
+        'Navotas City': 249463,
+        'Valenzuela City': 620422,
+        'Las Piñas City': 588894,
+        'Makati City': 582602,
+        'Muntinlupa City': 504509,
+        'Parañaque City': 665822,
+        'Pasay City': 416522,
+        'Pateros': 63840,
+        'Taguig City': 804915,
+    }
+
+    metro_pop = Series(
+        data=list(metro_pop_2015.values()),
+        index=list(metro_pop_2015.keys())
+    )
+
+    metro_conf_norm = round(metro_city_cases/metro_pop * 100000).replace(nan, 0)
+    metro_recov_norm = round(metro_city_recov/metro_pop * 100000).replace(nan, 0)
+    metro_dead_norm = round(metro_city_death/metro_pop * 100000).replace(nan, 0)
+
+    data = dict(
+        labels=list(metro_conf_norm.index),
+        datasets=[
+            dict(
+                label="Confirmed",
+                data=[int(v) for v in metro_conf_norm.values],
+                backgroundColor=bs4_warning,
+            ),
+            dict(
+                label="Recovered",
+                data=[int(v) for v in metro_recov_norm.values],
+                backgroundColor=bs4_success,
+            ),
+            dict(
+                label="Deceased",
+                data=[int(v) for v in metro_dead_norm.values],
                 backgroundColor=bs4_danger,
             ),
         ]
