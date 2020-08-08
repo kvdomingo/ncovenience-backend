@@ -1,15 +1,11 @@
 import json
 import pytz
-from . import data, plot, functions
+from backend import functions, plot, data
 from .models import *
 from time import time
-from datetime import datetime
-from pandas import DataFrame
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
-from django.utils.html import escapejs
-
 
 wake_time = time()
 

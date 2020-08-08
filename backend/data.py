@@ -3,10 +3,9 @@ import pandas as pd
 import numpy as np
 from urllib import request
 from urllib.error import HTTPError
-from datetime import datetime
 from django.core.cache import cache
 from django.conf import settings
-from . import functions
+from backend import functions
 
 
 def get_ph_confirmed():
@@ -25,7 +24,7 @@ def get_ph_confirmed():
 
 
 def get_phcovid():
-    with open(os.path.join(settings.BASE_DIR, 'web', 'static', 'web', 'data', 'latest.json'), 'r') as f:
+    with open(os.path.join(settings.BASE_DIR, 'web', '../web/static', 'web', 'data', 'latest.json'), 'r') as f:
         df = pd.read_json(f, orient='index').replace(np.nan, '').replace('None', '')
     return df
 

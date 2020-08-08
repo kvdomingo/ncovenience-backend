@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+
+admin.site.site_title = 'Admin'
+admin.site.site_title = 'ncovenience'
+admin.site.site_header = 'ncovenience administration'

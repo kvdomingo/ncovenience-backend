@@ -1,13 +1,8 @@
 import pandas as pd
 import numpy as np
-import plotly.express as px
 import plotly.graph_objs as go
-from . import data
-from datetime import datetime
+from backend import data
 from plotly.offline import plot
-from django.conf import settings
-from pandas.core.computation.ops import UndefinedVariableError
-
 
 bs4_success = '#00c851'
 bs4_warning = '#ffbb33'

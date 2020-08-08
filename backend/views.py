@@ -1,7 +1,7 @@
 from json import loads
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from web import data, functions, serialize
+from backend import functions, data, serialize
 
 
 @require_GET

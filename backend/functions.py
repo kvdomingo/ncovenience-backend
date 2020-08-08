@@ -1,7 +1,6 @@
 import geojson
-import pandas as pd
 from datetime import datetime
-from . import data
+from backend import data
 from django.core.cache import cache
 
 

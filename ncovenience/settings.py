@@ -14,7 +14,6 @@ import os
 import pytz
 from jinja2 import DebugUndefined, Undefined
 from dotenv import load_dotenv
-from plotly.express import set_mapbox_access_token
 
 
 load_dotenv()
@@ -35,8 +34,7 @@ DEBUG_PROPAGATE_EXCEPTIONS = True
 
 ALLOWED_HOSTS = [
     'localhost',
-    'ncovwebdev.herokuapp.com',
-    'ncovenience.herokuapp.com',
+    '.herokuapp.com',
 ]
 
 
@@ -45,7 +43,6 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'backend.apps.BackendConfig',
     'frontend.apps.FrontendConfig',
-    'web.apps.WebConfig',
     'phcovid.apps.PhcovidConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -168,8 +165,6 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     }
 }
-
-set_mapbox_access_token(os.environ['MAPBOX_ACCESS_TOKEN'])
 
 UNAVAILABLE_RESPONSE = 'No data available'
 

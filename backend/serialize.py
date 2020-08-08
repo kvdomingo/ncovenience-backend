@@ -1,6 +1,6 @@
 from numpy import arange, diff, round, nan
 from pandas import cut, Series
-from web.data import get_confirmed_over_time,\
+from backend.data import get_confirmed_over_time,\
                      get_recovered_over_time,\
                      get_deaths_over_time,\
                      get_phcovid
