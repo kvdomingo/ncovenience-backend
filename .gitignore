@@ -240,4 +240,5 @@ dist
 
 webpack-stats.json
 bundles/
+**/bundles/**
 .idea/
