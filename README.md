@@ -17,16 +17,16 @@
     > curl -X GET https://ncovenience.herokuapp.com/api
     ```
 
-- `GET` /health
-
-    Check the health/uptime of the API.
-    ```
-    > curl -X GET https://ncovenience.herokuapp.com/api/health
-    ```
-
 - `GET` /cases
 
     Returns data for all PH cases.
     ```
     > curl -X GET https://ncovenience.herokuapp.com/api/cases
+    ```
+
+- `GET` /numbers
+
+    Returns numbers of confirmed, recovered, and deceased cases.
+    ```
+    > curl -X GET https://ncovenience.herokuapp.com/api/numbers
     ```
