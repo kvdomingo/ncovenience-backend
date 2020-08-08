@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Accept-CH" content="DPR, Viewport-Width, Width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css' rel='stylesheet' />
+
+    {% if not settings.DEBUG and settings.ON_HEROKU %}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162676656-1"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'UA-162676656-1');
+        </script>
+
+        <meta name="description" content="COVID-19 Philippines cases tracking map and information hub." />
+        <meta property="og:title" content="COVID-19 PH Tracker" />
+        <meta property="og:url" content="http://ncovenience.herokuapp.com" />
+        <meta name="og:description" content="COVID-19 Philippines cases tracking map and information hub." />
+        <meta property="og:type" content="website" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="twitter:card" content="summary" />
+        <meta property="twitter:creator" content="@rockentothemoon" />
+        <meta name="twitter:image:alt" content="nCoVenience" />
+        <meta name="twitter:description" content="COVID-19 Philippines cases tracking map and information hub." />
+    {% endif %}
+<link href="/static/frontend/bundles/main.1242385768e12c08f385.css" rel="stylesheet"></head>
+
+<body>
+    <div id='root'></div>
+    {{ render_bundle('main') }}
+<script src="/static/frontend/bundles/main.1242385768e12c08f385.js"></script></body>
+</html>

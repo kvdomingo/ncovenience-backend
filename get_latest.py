@@ -17,7 +17,8 @@ from phcovid.phcovid import get_cases
 def main():
     print('Getting latest COVID-19PH data...')
     t0 = time()
-    df = get_cases().replace(NaN, '').replace(NaT, '').replace('None', '')
+    df = get_cases()
+    df = df.replace(NaN, '').replace(NaT, '').replace('None', '')
     t1 = time()
     print(f'Done in {(t1 - t0)/60} minutes')
     with open(os.path.join(settings.BASE_DIR, 'web/static/web/data/latest.json'), 'w') as f:

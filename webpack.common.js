@@ -1,8 +1,16 @@
-const path = require("path"),
+const webpack = require("webpack"),
+    path = require("path"),
+    dotenv = require("dotenv"),
     HtmlWebpackPlugin = require("html-webpack-plugin"),
     MiniCssExtractPlugin = require("mini-css-extract-plugin"),
     CleanWebpackPlugin = require("clean-webpack-plugin").CleanWebpackPlugin;
 
+
+const env = dotenv.config().parsed;
+const envKeys = Object.keys(env).reduce((prev, next) => {
+    prev[`process.env.${next}`] = JSON.stringify(env[next]);
+    return prev;
+}, {});
 
 module.exports = {
     context: __dirname,
@@ -27,7 +35,7 @@ module.exports = {
                 use: ["babel-loader"]
             },
             {
-                test: /\.s(a|c)ss$/,
+                test: /\.s([ac])ss$/,
                 use: ["style-loader", "css-loader", "sass-loader"]
             },
             {
@@ -62,13 +70,14 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.DefinePlugin(envKeys),
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
             filename: "main.[hash].css",
             chunkFilename: "[id].main.[hash].css"
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "frontend/jinja2/frontend/index.html.j2"),
+            template: path.resolve(__dirname, "frontend/jinja2/frontend/index.html"),
             filename: "index.html"
         })
     ]

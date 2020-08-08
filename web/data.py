@@ -37,7 +37,7 @@ def get_ph_numbers():
             'confirmed',
             'active',
             'recovered',
-            'deaths',
+            'deceased',
         ]
         ph_cases = [
             get_confirmed_over_time(),
@@ -47,6 +47,7 @@ def get_ph_numbers():
         ph_cases = [pc.query('`Country/Region` == "Philippines"') for pc in ph_cases]
         numbers_count = [pc[pc.columns[-1]].values[0] for pc in ph_cases]
         numbers_count.insert(1, numbers_count[0] - numbers_count[1] - numbers_count[2])
+        numbers_count = [int(nc) for nc in numbers_count]
         ph_numbers = dict(zip(numbers_type, numbers_count))
         cache.set('numbers', ph_numbers)
         cache.set('confirmed', ph_numbers['confirmed'], timeout=60*15)
@@ -59,7 +60,7 @@ def get_ph_numbers_delta():
     case_names = [
         'confirmed',
         'recovered',
-        'deaths',
+        'deceased',
     ]
     time_unique = [
         get_confirmed_over_time(),
@@ -80,6 +81,7 @@ def get_ph_numbers_delta():
         delta.append(today_count - remote_count)
     case_names.insert(1, 'active')
     delta.insert(1, delta[0] - delta[1] - delta[2])
+    delta = [int(d) for d in delta]
     return dict(zip(case_names, delta))
 
 
