@@ -3,6 +3,7 @@ from . import views
 
 
 urlpatterns = [
+    path('get-access-token', views.get_mapbox_token),
     path('cases', views.cases),
     path('numbers', views.numbers),
     path('counts', views.delta_counts),

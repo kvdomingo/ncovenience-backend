@@ -4,21 +4,29 @@ import {
     MDBCardHeader as CardHeader,
     MDBCardBody as CardBody,
 } from "mdbreact";
+import PropTypes from 'prop-types';
 import mapboxgl from "mapbox-gl";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "./Map.css";
+import Loading from "../Loading";
 
-
-mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN || process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
 export default class Map extends React.Component {
-    state = {
-        lng: 121,
-        lat: 12.5,
-        zoom: 4.5,
-        provinces: [],
-        cases: [],
+    static propTypes = {
+        mapboxApiToken: PropTypes.string.isRequired,
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            lng: 121,
+            lat: 12.5,
+            zoom: 4.5,
+            provinces: [],
+            cases: [],
+        }
+        mapboxgl.accessToken = this.props.mapboxApiToken;
     }
 
     getProvinces = () => {
