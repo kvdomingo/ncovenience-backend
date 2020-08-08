@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 ipython = "*"
+pyqt5 = "*"
 
 [packages]
 django = "*"
@@ -18,7 +19,6 @@ numpy = "*"
 pandas = "*"
 phcovid = "*"
 psycopg2 = "*"
-pyqt5 = "*"
 python-dotenv = "*"
 pytz = "*"
 requests = "*"

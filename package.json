@@ -1,6 +1,6 @@
 {
     "name": "ncovenience",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "description": "![GitHub](https://img.shields.io/github/license/kvdomingo/covid19-ph-web?style=flat-square)\r ![GitHub last commit](https://img.shields.io/github/last-commit/kvdomingo/covid19-ph-web?style=flat-square)",
     "main": "index.js",
     "scripts": {
