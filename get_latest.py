@@ -21,7 +21,7 @@ def main():
     df = df.replace(NaN, '').replace(NaT, '').replace('None', '')
     t1 = time()
     print(f'Done in {(t1 - t0)/60} minutes')
-    with open(os.path.join(settings.BASE_DIR, 'web/static/web/data/latest.json'), 'w') as f:
+    with open(os.path.join(settings.BASE_DIR, 'backend/data/latest.json'), 'w') as f:
         df.to_json(f, indent=4, orient='index')
 
 

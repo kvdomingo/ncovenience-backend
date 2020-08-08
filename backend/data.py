@@ -24,7 +24,7 @@ def get_ph_confirmed():
 
 
 def get_phcovid():
-    with open(os.path.join(settings.BASE_DIR, 'web', '../web/static', 'web', 'data', 'latest.json'), 'r') as f:
+    with open(os.path.join(settings.BASE_DIR, 'backend/data/latest.json'), 'r') as f:
         df = pd.read_json(f, orient='index').replace(np.nan, '').replace('None', '')
     return df
 
