@@ -27,7 +27,7 @@
         "@fortawesome/fontawesome-free": "^5.13.0",
         "@mapbox/mapbox-gl-geocoder": "^4.6.0",
         "bootstrap-css-only": "^4.4.1",
-        "chart.js": "^2.9.3",
+        "chart.js": "^2.9.4",
         "cloudinary-react": "^1.6.0",
         "dateformat": "^3.0.3",
         "js-cookie": "^2.2.1",
