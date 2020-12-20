@@ -1,14 +1,7 @@
-from os import environ
 from json import loads
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from backend import functions, data, serialize
-
-
-@require_POST
-def get_mapbox_token(request):
-    mapboxApiToken = environ['MAPBOX_ACCESS_TOKEN']
-    return JsonResponse(dict(mapboxApiToken=mapboxApiToken))
 
 
 @require_GET

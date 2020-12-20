@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import pytz
+from pathlib import Path
 from jinja2 import DebugUndefined, Undefined
 from dotenv import load_dotenv
 
@@ -19,8 +20,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -33,27 +33,32 @@ DEBUG = bool(int(os.environ['DEBUG']))
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
 ALLOWED_HOSTS = [
-    'localhost',
     '.herokuapp.com',
 ]
+
+if DEBUG:
+    ALLOWED_HOSTS.extend([
+        'localhost',
+        '127.0.0.1',
+    ])
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'backend.apps.BackendConfig',
-    'frontend.apps.FrontendConfig',
     'phcovid.apps.PhcovidConfig',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'webpack_loader',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -65,10 +70,22 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'ncovenience.urls'
 
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = [
+    'https://ncovenience.vercel.app',
+]
+
+if DEBUG:
+    CORS_ORIGIN_WHITELIST.extend([
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+    ])
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [f'{PROJECT_DIR}/jinjatemplates/'],
+        'DIRS': [BASE_DIR / 'jinjatemplates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'environment': 'ncovenience.jinja2.environment',
@@ -97,7 +114,7 @@ DEFAULT_TIMEOUT = 60*15
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': f'{PROJECT_DIR}/cache',
+        'LOCATION': BASE_DIR / 'cache',
         'TIMEOUT': DEFAULT_TIMEOUT,
         'OPTIONS': {
             'MAX_ENTRIES': 1000,
@@ -157,14 +174,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': False,
-        'BUNDLE_DIR_NAME': 'frontend/bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-    }
-}
 
 UNAVAILABLE_RESPONSE = 'No data available'
 
